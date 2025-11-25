@@ -18,9 +18,12 @@ export default function RegistrationForm() {
       phone,
       password,
     }
-
-    const resp = await registerUser(payload);
-    toast.success('Registration successful!');
+    try {
+      const resp = await registerUser(payload);
+      toast.success('Registration successful!');
+    } catch (error) {
+      toast.error('Registration failed. Please try again.');
+    }
   }
 
 
