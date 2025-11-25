@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import axios from 'axios';
+import { registerUser } from '../service/user';
+import toast, {Toaster} from 'react-hot-toast';
 
 export default function RegistrationForm() {
   const [registerAs, setRegisterAs] = useState('user');
@@ -7,7 +10,7 @@ export default function RegistrationForm() {
   const [password, setPassword] = useState('');
 
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     // Handle form submission logic here
     const payload = {
       registerAs,
@@ -15,12 +18,15 @@ export default function RegistrationForm() {
       phone,
       password,
     }
-    console.log('Form submitted:', payload);
+
+    const resp = await registerUser(payload);
+    toast.success('Registration successful!');
   }
 
 
   return (
     <div className="bg-gray-50 flex items-center justify-center min-h-screen">
+      <Toaster />
       <div className="bg-white p-8 rounded-lg shadow w-full max-w-md">
         <div className="flex flex-col items-center mb-6">
           <img
