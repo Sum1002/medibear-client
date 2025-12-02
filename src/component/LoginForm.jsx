@@ -1,19 +1,31 @@
 import { useState } from "react";
+import { loginUser } from "../service/user";
+import toast, {Toaster} from 'react-hot-toast';
+
+
 export default function LoginForm() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     // Handle form submission logic here
     const payload = {
       phone,
       password,
     }
-    console.log('Form submitted:', payload);
+    try {
+      const resp = await loginUser(payload);
+      localStorage.setItem('auth_token', resp.data.access_token);
+      toast.success('Login successful!');
+      location.href = '/';
+    } catch (error) {
+      toast.error('Login failed. Please check your credentials and try again.');
+    }
   }
 
   return (
     <div className="bg-gray-50 flex items-center justify-center min-h-screen">
+      <Toaster />
       <div className="bg-white p-8 rounded-lg shadow w-full max-w-md">
         <div className="flex flex-col items-center mb-6">
           <img

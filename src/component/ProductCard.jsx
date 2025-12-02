@@ -16,7 +16,7 @@ export default function ProductCard({ productName, pharmacyName, price }) {
         <p className="text-sm text-gray-600 mt-1">pharmacyName</p>
         <div className="mt-3 flex items-center justify-between">
           <span className="text-sm font-medium">৳ price</span>
-          <Button buttonText={"ADD"} />
+          <Button buttonText={"Badhon"} />
         </div>
       </div>
     </div>
