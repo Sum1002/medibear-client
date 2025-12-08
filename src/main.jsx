@@ -9,6 +9,9 @@ import Navbar from './component/Navbar.jsx';
 import HeroSection from './component/HeroSection.jsx';
 import ProductCard from './component/ProductCard.jsx';
 import Cart from'./component/Cart.jsx';
+import LandingPage from './component/LandingPage.jsx';
+import PopularCategoryCard from './component/PopularCategoryCard.jsx';
+import Footer from './component/Footer.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -20,6 +23,10 @@ createRoot(document.getElementById('root')).render(
       <Route path="/herosection" element={<HeroSection />} />
       <Route path="/pcard" element={<ProductCard />} />
       <Route path="/cart" element={<Cart />} /> 
+      <Route path="/landing" element={<LandingPage />} />
+      <Route path="/pccard" element={<PopularCategoryCard />} />
+      <Route path="/footer" element={<Footer />} />
+
     </Routes>
   </BrowserRouter>,
 )
