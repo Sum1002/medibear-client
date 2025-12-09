@@ -2,6 +2,7 @@ import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
 import ProductCard from "./ProductCard";
 import PopularCategoryCard from './PopularCategoryCard';
+import Button from './Button';
 import Footer from "./Footer";
 
 export default function LandingPage() {
@@ -56,6 +57,10 @@ export default function LandingPage() {
               />
             ));
           })()}
+        </div>
+        {/* Centered button under products */}
+        <div className="flex justify-center mt-6">
+          <Button buttonText="View More" />
         </div>
       </div>
       <Footer/>
