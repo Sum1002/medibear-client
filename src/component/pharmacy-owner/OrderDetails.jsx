@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router';
+import PharmacyOwnerNav from './PharmacyOwnerNav';
 
 const OrderDetails = () => {
   const [searchParams] = useSearchParams();
@@ -32,22 +33,10 @@ const OrderDetails = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
-      <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm">
-        <div className="flex items-center gap-3">
-          <img src="/medi-Image/MediBear-Main-Logo.png" alt="MediBear" className="h-10" />
-        </div>
-        <div className="flex items-center gap-3">
-          <Link to="/pharmacy/dashboard" className="text-sm text-gray-600 hover:text-blue-600">
-            Dashboard
-          </Link>
-          <Link to="/pharmacy/orders" className="text-sm text-gray-600 hover:text-blue-600">
-            Orders
-          </Link>
-          <Link to="/login" className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm">
-            Logout
-          </Link>
-        </div>
-      </nav>
+      <PharmacyOwnerNav
+        extraLinks={[{ to: "/pharmacy/orders", label: "Orders" }]}
+        showName
+      />
 
       <main className="flex-1 max-w-screen-2xl mx-auto px-6 py-8 w-full">
         <header className="mb-6">

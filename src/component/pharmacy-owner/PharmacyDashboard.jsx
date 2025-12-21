@@ -1,48 +1,11 @@
 import React from "react";
 import { Link } from "react-router";
+import PharmacyOwnerNav from "./PharmacyOwnerNav";
 
 const PharmacyDashboard = () => {
-  const getPharmacyName = () => {
-    const userInfo = localStorage.getItem('logged_in_user');
-    if (!userInfo) return 'Pharmacy';
-    const user = JSON.parse(userInfo);
-    return user.name || 'Pharmacy';
-  }
-
-  const logout = () => {
-    localStorage.removeItem('logged_in_user');
-    localStorage.removeItem('auth_token');
-    window.location.href = '/';
-  }
-
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
-      <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm">
-        <div className="flex items-center gap-3">
-          <img
-            src="/medi-Image/MediBear-Main-Logo.png"
-            alt="MediBear"
-            className="h-12"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <a
-            href="#"
-            title="Pharmacy profile"
-            className="text-gray-600 hover:text-blue-600"
-            aria-label="Pharmacy profile"
-          >
-            {getPharmacyName()}
-          </a>
-          <button
-            onClick={logout}
-            className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm"
-          >
-            Logout
-          </button>
-        </div>
-      </nav>
+      <PharmacyOwnerNav showName />
 
       <main className="flex-1 max-w-screen-2xl mx-auto px-6 py-10 w-full">
         <header className="mb-8 flex items-center justify-between">

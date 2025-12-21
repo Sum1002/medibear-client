@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Use relative base URL; Vite proxy will forward to backend
-const baseUrl = "/api";
+const baseUrl = "http://localhost:8000/api";
 
 const getAuthHeaders = (isFormData = false) => {
   const authToken = localStorage.getItem("auth_token");
@@ -45,5 +45,10 @@ export const createProduct = (productData) => {
 export const updateProduct = (productId, productData) => {
   return axios.put(`${baseUrl}/products/${productId}`, productData, {
     headers: getAuthHeaders(true), // true indicates FormData
+  });
+};
+export const deleteProduct = (productId) => {
+  return axios.delete(`${baseUrl}/products/${productId}`, {
+    headers: getAuthHeaders(),
   });
 };
