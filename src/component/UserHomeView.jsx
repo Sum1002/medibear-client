@@ -1,11 +1,11 @@
-import Navbar from "./Navbar";
-import HeroSection from "./HeroSection";
-import ProductCard from "./ProductCard";
-import PopularCategoryCard from './PopularCategoryCard';
-import Button from './Button';
+import Button from "./Button";
 import Footer from "./Footer";
+import HeroSection from "./HeroSection";
+import Navbar from "./Navbar";
+import PopularCategoryCard from "./PopularCategoryCard";
+import ProductCard from "./ProductCard";
 
-export default function LandingPage() {
+export default function UserHomeView() {
   const categories = [
     { img: '/medi-Image/Vaccin.png', name: 'Vaccines' },
     { img: '/medi-Image/inh.png', name: 'Inhalers' },
@@ -18,7 +18,7 @@ export default function LandingPage() {
   return (
     <>
       <Navbar />
-      <HeroSection/>
+      <HeroSection />
       {/* Popular categories: 6 small cards */}
       <div className="text-center mt-8 ml-4 mr-4 p-4">
         <h2 className="text-xl font-bold mb-6">Popular Categories</h2>
@@ -38,13 +38,13 @@ export default function LandingPage() {
           {(() => {
             // explicit list of available images in public/medi-Image
             const images = [
-              '/medi-Image/m1.jpg',
-              '/medi-Image/m2.png',
-              '/medi-Image/m4.jpeg',
-              '/medi-Image/m5.jpg',
-              '/medi-Image/m6.webp',
-              '/medi-Image/m7.webp',
-              '/medi-Image/m8.png',
+              "/medi-Image/m1.jpg",
+              "/medi-Image/m2.png",
+              "/medi-Image/m4.jpeg",
+              "/medi-Image/m5.jpg",
+              "/medi-Image/m6.webp",
+              "/medi-Image/m7.webp",
+              "/medi-Image/m8.png",
             ];
 
             return Array.from({ length: 12 }).map((_, i) => (
@@ -52,7 +52,7 @@ export default function LandingPage() {
                 key={i}
                 img={images[i % images.length]}
                 productName={`Product ${i + 1}`}
-                pharmacyName={`Pharmacy ${((i % 5) + 1)}`}
+                pharmacyName={`Pharmacy ${(i % 5) + 1}`}
                 price={199 + i * 10}
               />
             ));
@@ -63,7 +63,7 @@ export default function LandingPage() {
           <Button buttonText="View More" />
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

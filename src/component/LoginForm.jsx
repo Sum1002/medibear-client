@@ -16,6 +16,7 @@ export default function LoginForm() {
     try {
       const resp = await loginUser(payload);
       localStorage.setItem('auth_token', resp.data.access_token);
+      localStorage.setItem('logged_in_user', JSON.stringify(resp.data.user));
       toast.success('Login successful!');
       location.href = '/';
     } catch (error) {

@@ -1,6 +1,10 @@
 import Button from "./Button.jsx";
 
 export default function Navbar() {
+  const getLoggedInUser = () => {
+    const user = localStorage.getItem('logged_in_user');
+    return user ? JSON.parse(user) : null;
+  }
     return (
     <nav className="bg-white shadow py-2">
       <div className="max-w-screen-2xl mx-auto px-6 flex items-center justify-between">
@@ -19,7 +23,13 @@ export default function Navbar() {
             </svg>
             <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-medium leading-none text-white bg-red-600 rounded-full">0</span>
           </a>
-          <a href="/login" ><Button/></a>
+          {getLoggedInUser() ? (
+            <span className="text-gray-700 font-medium">Hello, {getLoggedInUser().name}</span>
+          ) : (
+            <a href="/login">
+              <Button buttonText="Login" />
+            </a>
+          )}
         </div>
       </div>
     </nav>);
