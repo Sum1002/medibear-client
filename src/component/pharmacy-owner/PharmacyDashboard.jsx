@@ -30,7 +30,7 @@ const PharmacyDashboard = () => {
               aria-label="Open Inventory"
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-600">
+                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-linear-to-br from-blue-50 to-cyan-50 text-blue-600">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"
@@ -62,7 +62,7 @@ const PharmacyDashboard = () => {
               aria-label="Open Inventory"
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-600">
+                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-linear-to-br from-blue-50 to-cyan-50 text-blue-600">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"
@@ -95,7 +95,7 @@ const PharmacyDashboard = () => {
               aria-label="Open Order Management"
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-gradient-to-br from-orange-50 to-amber-50 text-amber-700">
+                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-linear-to-br from-orange-50 to-amber-50 text-amber-700">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"
@@ -140,7 +140,7 @@ const PharmacyDashboard = () => {
               aria-label="Open Complaints"
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-gradient-to-br from-red-50 to-rose-50 text-red-700">
+                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-linear-to-br from-red-50 to-rose-50 text-red-700">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"
@@ -184,7 +184,7 @@ const PharmacyDashboard = () => {
               aria-label="Open Summary"
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-gradient-to-br from-green-50 to-emerald-50 text-green-600">
+                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-linear-to-br from-green-50 to-emerald-50 text-green-600">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"
