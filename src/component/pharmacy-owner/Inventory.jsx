@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchProducts, fetchSuppliers, createProduct, updateProduct, deleteProduct } from "../../service/pharmacy";
+import { fetchProducts, fetchSuppliers, createProduct, updateProduct, deleteProduct } from "../../service/http";
 import PharmacyOwnerNav from "./PharmacyOwnerNav";
 
 const Inventory = () => {

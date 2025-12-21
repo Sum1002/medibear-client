@@ -32,6 +32,25 @@ export const fetchSuppliers = () => {
   });
 };
 
+export const createSupplier = (payload) => {
+  return axios.post(`${baseUrl}/suppliers`, payload, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const updateSupplier = (id, payload) => {
+  // Backend expects POST to /api/suppliers/{id} for update
+  return axios.post(`${baseUrl}/suppliers/${id}`, payload, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const deleteSupplier = (id) => {
+  return axios.delete(`${baseUrl}/suppliers/${id}`, {
+    headers: getAuthHeaders(),
+  });
+};
+
 export const createProduct = (productData) => {
   const authToken = localStorage.getItem("auth_token");
   console.log("Auth token:", authToken ? "Present" : "Missing");

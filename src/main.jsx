@@ -17,6 +17,7 @@ import Inventory from './component/pharmacy-owner/Inventory.jsx';
 import OrderManagement from './component/pharmacy-owner/OrderManagement.jsx';
 import Complaints from './component/pharmacy-owner/Complaints.jsx';
 import Summary from './component/pharmacy-owner/Summary.jsx';
+import Suppliers from './component/pharmacy-owner/Suppliers.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')).render(
       <Route path="/pharmacy/orders" element={<OrderManagement />} />
       <Route path="/pharmacy/complaints" element={<Complaints />} />
       <Route path="/pharmacy/summary" element={<Summary />} />
+      <Route path="/pharmacy/suppliers" element={<Suppliers />} />
 
       </Routes>
   </BrowserRouter>,

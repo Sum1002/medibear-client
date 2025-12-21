@@ -25,6 +25,38 @@ const PharmacyDashboard = () => {
           {/* Inventory Card */}
           <article className="bg-white rounded-xl p-5 shadow-md border border-gray-100 transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg">
             <Link
+              to="/pharmacy/suppliers"
+              className="block h-full"
+              aria-label="Open Inventory"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M3 7l9-4 9 4M3 7v10l9 4 9-4V7"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="text-2xl font-bold text-blue-600 mt-2">
+                    Supplier
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </article>
+
+          <article className="bg-white rounded-xl p-5 shadow-md border border-gray-100 transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg">
+            <Link
               to="/pharmacy/inventory"
               className="block h-full"
               aria-label="Open Inventory"
@@ -47,9 +79,8 @@ const PharmacyDashboard = () => {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-gray-500">Inventory</p>
                   <div className="text-2xl font-bold text-blue-600 mt-2">
-                    100 Medicines
+                    Inventory
                   </div>
                 </div>
               </div>
