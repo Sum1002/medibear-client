@@ -150,3 +150,10 @@ export const createOrderComplaint = (orderId, message) => {
     },
   );
 };
+
+// Pharmacy summary
+export const getPharmacySummary = () => {
+  return axios.get(`${baseUrl}/pharmacy/summary`, {
+    headers: getAuthHeaders(),
+  });
+};

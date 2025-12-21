@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
 import PharmacyOwnerNav from "./PharmacyOwnerNav";
+import Summary from "./Summary";
 
 const PharmacyDashboard = () => {
   return (
@@ -21,7 +22,7 @@ const PharmacyDashboard = () => {
           </div>
         </header>
 
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Inventory Card */}
           <article className="bg-white rounded-xl p-5 shadow-md border border-gray-100 transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg">
             <Link
@@ -122,91 +123,10 @@ const PharmacyDashboard = () => {
             </Link>
           </article>
 
-          {/* Complaints Card */}
-          <article className="bg-white rounded-xl p-5 shadow-md border border-gray-100 transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg">
-            <Link
-              to="/pharmacy/complaints"
-              className="block h-full"
-              aria-label="Open Complaints"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-linear-to-br from-red-50 to-rose-50 text-red-700">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                      d="M7 8h10M7 12h6m2 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v6"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">Complaints</p>
-                      <div className="text-2xl font-bold text-blue-600">
-                        7 Open
-                      </div>
-                    </div>
-                    <div className="text-sm text-yellow-600 font-medium">
-                      Urgent
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-3">
-                    Track customer complaints, respond, and escalate as needed.
-                  </p>
-                </div>
-              </div>
-            </Link>
-          </article>
-
-          {/* Summary Card */}
-          <article className="bg-white rounded-xl p-5 shadow-md border border-gray-100 transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg">
-            <Link
-              to="/pharmacy/summary"
-              className="block h-full"
-              aria-label="Open Summary"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-linear-to-br from-green-50 to-emerald-50 text-green-600">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                      d="M11 3v18M20 7v10M2 13v8"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">Summary</p>
-                      <div className="text-2xl font-bold text-blue-600">
-                        <span className="mr-2 text-lg">৳</span>12,430
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-500">Monthly</div>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-3">
-                    Quick financial snapshot and sales performance this month.
-                  </p>
-                </div>
-              </div>
-            </Link>
-          </article>
+          {/* Embedded Summary Details */}
+          <div className="lg:col-span-4">
+            <Summary embedded />
+          </div>
         </section>
       </main>
 
