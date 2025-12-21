@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { getPharmaciesWithPagination } from "../service/http";
+import { getPharmaciesWithPagination, getUserDetails, addFavoritePharmacy, removeFavoritePharmacy } from "../service/http";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import PharmacyCard from "./PharmacyCard";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Pharmacies() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function Pharmacies() {
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState([]);
 
   const limit = 20;
 
@@ -34,7 +36,38 @@ export default function Pharmacies() {
 
   useEffect(() => {
     fetchPharmacies(offset);
+    fetchFavorites();
   }, [offset]);
+
+  const fetchFavorites = async () => {
+    try {
+      const res = await getUserDetails();
+      const data = res.data?.data || res.data || {};
+      const favs = Array.isArray(data.favorite_pharmacies) ? data.favorite_pharmacies : [];
+      setFavoriteIds(favs.map(f => f.id || f.pharmacy_id));
+    } catch (err) {
+      console.error("Error fetching favorites:", err);
+    }
+  };
+
+  const handleFavoriteToggle = async (pharmacyId) => {
+    const isFav = favoriteIds.includes(pharmacyId);
+    try {
+      if (isFav) {
+        await removeFavoritePharmacy(pharmacyId);
+        setFavoriteIds(prev => prev.filter(id => id !== pharmacyId));
+        toast.success("Removed from favorites");
+      } else {
+        await addFavoritePharmacy(pharmacyId);
+        setFavoriteIds(prev => [...prev, pharmacyId]);
+        toast.success("Added to favorites");
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+      const msg = err.response?.data?.message || "Failed to update favorites";
+      toast.error(msg);
+    }
+  };
 
   const handleNext = () => {
     if (hasMore) {
@@ -58,6 +91,7 @@ export default function Pharmacies() {
   return (
     <>
       <Navbar />
+      <Toaster position="top-right" />
 
       <div className="flex flex-col min-h-screen">
         <div className="flex-grow text-center mt-8 ml-4 mr-4 p-4 overflow-y-auto">
@@ -85,7 +119,9 @@ export default function Pharmacies() {
                   }
                   name={pharmacy.name}
                   address={pharmacy.address || ""}
+                  isFavorite={favoriteIds.includes(pharmacy.id)}
                   onView={() => handleViewProducts(pharmacy.id, pharmacy.name)}
+                  onFavoriteToggle={() => handleFavoriteToggle(pharmacy.id)}
                 />
               ))}
             </div>

@@ -95,9 +95,9 @@ export default function Navbar() {
             </span>
           </a>
           {getLoggedInUser() ? (
-            <span className="text-gray-700 font-medium">
+            <a href="/profile" className="text-blue-700 hover:text-blue-900 font-medium hover:underline">
               Hello, {getLoggedInUser().name}
-            </span>
+            </a>
           ) : (
             <a href="/login">
               <Button buttonText="Login" />

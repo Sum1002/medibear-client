@@ -157,3 +157,46 @@ export const getPharmacySummary = () => {
     headers: getAuthHeaders(),
   });
 };
+
+// User Profile APIs
+export const getUserDetails = () => {
+  return axios.get(`${baseUrl}/user/details`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+// Address APIs
+export const createAddress = (addressData) => {
+  return axios.post(`${baseUrl}/addresses`, addressData, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const updateAddress = (id, addressData) => {
+  return axios.post(`${baseUrl}/addresses/${id}`, addressData, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const deleteAddress = (id) => {
+  return axios.delete(`${baseUrl}/addresses/${id}`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+// Favorite Pharmacy APIs
+export const addFavoritePharmacy = (pharmacyId) => {
+  return axios.post(
+    `${baseUrl}/favorites`,
+    { pharmacy_id: pharmacyId },
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+};
+
+export const removeFavoritePharmacy = (pharmacyId) => {
+  return axios.delete(`${baseUrl}/favorites/${pharmacyId}`, {
+    headers: getAuthHeaders(),
+  });
+};
