@@ -71,3 +71,11 @@ export const deleteProduct = (productId) => {
     headers: getAuthHeaders(),
   });
 };
+
+export const getPopularProducts = () => {
+  return axios.get(`${baseUrl}/products/popular`, {
+    headers: {
+      "Content-Type": "application/json",
+    }
+  });
+}

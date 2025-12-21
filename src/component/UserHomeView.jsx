@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { getPopularProducts } from "../service/http";
 import Button from "./Button";
 import Footer from "./Footer";
 import HeroSection from "./HeroSection";
@@ -14,6 +16,19 @@ export default function UserHomeView() {
     { img: '/medi-Image/Anti.png', name: 'Antibiotics' },
     { img: '/medi-Image/supli.png', name: 'Supplements' },
   ];
+
+  const [popularProducts, setPopularProducts] = useState([]);
+
+  useEffect(() => {
+    // Fetch popular products from the backend API
+    getPopularProducts()
+      .then(response => {
+        setPopularProducts(response.data.data);
+      })
+      .catch(error => {
+        console.error("Error fetching popular products:", error);
+      });
+  }, []);
 
   return (
     <>
@@ -35,28 +50,16 @@ export default function UserHomeView() {
       <div className="text-center mt-8 ml-4 mr-4 p-4">
         <h1 className="text-xl font-bold mb-6">Popular Product</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-          {(() => {
-            // explicit list of available images in public/medi-Image
-            const images = [
-              "/medi-Image/m1.jpg",
-              "/medi-Image/m2.png",
-              "/medi-Image/m4.jpeg",
-              "/medi-Image/m5.jpg",
-              "/medi-Image/m6.webp",
-              "/medi-Image/m7.webp",
-              "/medi-Image/m8.png",
-            ];
-
-            return Array.from({ length: 12 }).map((_, i) => (
+          { popularProducts.map((product, i) => (
               <ProductCard
                 key={i}
-                img={images[i % images.length]}
-                productName={`Product ${i + 1}`}
-                pharmacyName={`Pharmacy ${(i % 5) + 1}`}
+                img={"http://localhost:8000/storage/" + product.image_path}
+                productName={product.name}
+                pharmacyName={product.user.name}
                 price={199 + i * 10}
               />
-            ));
-          })()}
+            ))
+          }
         </div>
         {/* Centered button under products */}
         <div className="flex justify-center mt-6">
