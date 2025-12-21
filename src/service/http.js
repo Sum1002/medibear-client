@@ -78,4 +78,30 @@ export const getPopularProducts = () => {
       "Content-Type": "application/json",
     }
   });
-}
+};
+
+export const getPopularProductsWithPagination = (
+  offset = 0,
+  limit = 20,
+  pharmacyId,
+) => {
+  return axios.get(`${baseUrl}/products/popular`, {
+    params: {
+      offset,
+      limit,
+      ...(pharmacyId ? { pharmacy_id: pharmacyId } : {}),
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+export const getPharmaciesWithPagination = (offset = 0, limit = 20) => {
+  return axios.get(`${baseUrl}/pharmacies`, {
+    params: { offset, limit },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};

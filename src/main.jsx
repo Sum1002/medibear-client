@@ -18,6 +18,8 @@ import OrderManagement from './component/pharmacy-owner/OrderManagement.jsx';
 import Complaints from './component/pharmacy-owner/Complaints.jsx';
 import Summary from './component/pharmacy-owner/Summary.jsx';
 import Suppliers from './component/pharmacy-owner/Suppliers.jsx';
+import ProductPage from './component/ProductPage.jsx';
+import Pharmacies from './component/Pharmacies.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -37,7 +39,8 @@ createRoot(document.getElementById('root')).render(
       <Route path="/pharmacy/complaints" element={<Complaints />} />
       <Route path="/pharmacy/summary" element={<Summary />} />
       <Route path="/pharmacy/suppliers" element={<Suppliers />} />
-
+      <Route path="/products" element={<ProductPage />} />
+      <Route path="/pharmacies" element={<Pharmacies />} />
       </Routes>
   </BrowserRouter>,
 )

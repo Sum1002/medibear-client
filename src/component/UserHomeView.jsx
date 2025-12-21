@@ -63,7 +63,9 @@ export default function UserHomeView() {
         </div>
         {/* Centered button under products */}
         <div className="flex justify-center mt-6">
-          <Button buttonText="View More" />
+          <Button buttonText="View More" onClick={() => {
+            window.location.href = "/products";
+          }}/>
         </div>
       </div>
       <Footer />
