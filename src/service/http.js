@@ -105,3 +105,9 @@ export const getPharmaciesWithPagination = (offset = 0, limit = 20) => {
     },
   });
 };
+
+export const createOrder = (payload) => {
+  return axios.post(`${baseUrl}/orders`, payload, {
+    headers: getAuthHeaders(),
+  });
+};

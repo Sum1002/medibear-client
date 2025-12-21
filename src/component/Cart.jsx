@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Navbar from './Navbar';
+import toast, { Toaster } from 'react-hot-toast';
+import { createOrder } from '../service/http';
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -71,20 +73,59 @@ export default function Cart() {
 
   function placeOrder() {
     if (cart.length === 0) {
-      alert('Your cart is empty');
+      toast.error('Your cart is empty');
       return;
     }
     if (!payment) {
-      alert('Please choose a payment method');
+      toast.error('Please choose a payment method');
       return;
     }
-    alert(`Order placed — payment: ${payment}\nTotal: ৳${grandTotal.toFixed(2)}`);
-    setCart([]);
+
+    // Check if all items have the same pharmacy_id
+    const pharmacyIds = cart.map((item) => item.pharmacyId).filter(Boolean);
+    if (new Set(pharmacyIds).size > 1) {
+      toast.error('All items must be from the same pharmacy');
+      return;
+    }
+
+    const pharmacyId = pharmacyIds[0];
+    if (!pharmacyId) {
+      toast.error('Pharmacy information is missing');
+      return;
+    }
+
+    const payload = {
+      pharmacy_id: pharmacyId,
+      payment_type: payment,
+      items: cart.map((item) => ({
+        product_id: item.id,
+        quantity: item.quantity || 1,
+      })),
+    };
+
+    (async () => {
+      try {
+        console.log('Sending order payload:', payload);
+        const response = await createOrder(payload);
+        console.log('Order response:', response);
+        toast.success('Order placed successfully!');
+        setCart([]);
+        localStorage.removeItem('cart');
+        window.dispatchEvent(new Event('cart-updated'));
+      } catch (error) {
+        console.error('Error placing order:', error);
+        console.error('Error response:', error.response?.data);
+        const errorMsg =
+          error.response?.data?.message || 'Failed to place order. Please try again.';
+        toast.error(errorMsg);
+      }
+    })();
   }
 
   return (
     <>
       <Navbar />
+      <Toaster position="top-right" />
       <main className="max-w-screen-lg mx-auto px-6 py-8">
       <header className="flex items-center justify-between mb-6">
         <div>
