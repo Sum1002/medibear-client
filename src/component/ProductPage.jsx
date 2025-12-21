@@ -118,7 +118,7 @@ export default function ProductPage() {
       <Toaster position="top-right" />
 
       <div className="flex flex-col min-h-screen">
-        <div className="flex-grow text-center mt-8 ml-4 mr-4 p-4 overflow-y-auto">
+        <div className="grow text-center mt-8 ml-4 mr-4 p-4 overflow-y-auto">
           {pharmacyId && pharmacyName && (
             <h1 className="text-2xl font-bold mb-6">{pharmacyName}</h1>
           )}

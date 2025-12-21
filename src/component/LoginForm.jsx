@@ -69,7 +69,7 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={onSubmit}
-            className="w-full py-2 bg-gradient-to-r from-blue-950 to-blue-700 hover:from-blue-800 to-blue-600 text-white rounded font-semibold shadow hover:bg-blue-700"
+            className="w-full py-2 bg-linear-to-r from-blue-950 to-blue-700 hover:from-blue-800 text-white rounded font-semibold shadow hover:bg-blue-700"
           >
             Login
           </button>

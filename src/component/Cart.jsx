@@ -126,7 +126,7 @@ export default function Cart() {
     <>
       <Navbar />
       <Toaster position="top-right" />
-      <main className="max-w-screen-lg mx-auto px-6 py-8">
+      <main className="max-w-5xl mx-auto px-6 py-8">
       <header className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-blue-900">Your Cart</h1>

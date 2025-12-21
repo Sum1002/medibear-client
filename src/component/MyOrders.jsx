@@ -127,7 +127,7 @@ export default function MyOrders() {
       <Toaster position="top-right" />
 
       <div className="min-h-screen bg-gray-50">
-        <main className="max-w-screen-lg mx-auto px-6 py-8">
+        <main className="max-w-5xl mx-auto px-6 py-8">
           <header className="mb-6">
             <h1 className="text-3xl font-bold text-blue-900">My Orders</h1>
             <p className="text-gray-600 mt-1">View and manage your orders</p>
@@ -226,7 +226,7 @@ export default function MyOrders() {
 
       {/* Side Drawer */}
       {drawerOpen && selectedOrder && (
-        <div className="fixed right-0 top-0 bottom-0 w-[48rem] bg-white shadow-lg z-50 overflow-y-auto transition-transform transform translate-x-0">
+        <div className="fixed right-0 top-0 bottom-0 w-3xl bg-white shadow-lg z-50 overflow-y-auto transition-transform transform translate-x-0">
           <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">Order Details</h2>
             <button

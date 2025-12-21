@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import {
   getUserDetails,
   createAddress,
@@ -12,6 +13,7 @@ import Footer from "./Footer";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function Profile() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
@@ -147,7 +149,7 @@ export default function Profile() {
       <Toaster position="top-right" />
 
       <div className="min-h-screen bg-gray-50">
-        <main className="max-w-screen-xl mx-auto px-6 py-8">
+        <main className="max-w-7xl mx-auto px-6 py-8">
 
           {error && (
             <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
@@ -420,7 +422,12 @@ export default function Profile() {
                     {favorites.map((fav) => (
                       <div
                         key={fav.id || fav.pharmacy_id}
-                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition"
+                        onClick={() =>
+                          navigate(
+                            `/products?pharmacyId=${fav.id || fav.pharmacy_id}&pharmacyName=${encodeURIComponent(fav.name || "Pharmacy")}`
+                          )
+                        }
+                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition cursor-pointer"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -439,9 +446,10 @@ export default function Profile() {
                             )}
                           </div>
                           <button
-                            onClick={() =>
-                              handleRemoveFavorite(fav.id || fav.pharmacy_id)
-                            }
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFavorite(fav.id || fav.pharmacy_id);
+                            }}
                             className="text-red-600 hover:text-red-800"
                             aria-label="Remove favorite"
                           >

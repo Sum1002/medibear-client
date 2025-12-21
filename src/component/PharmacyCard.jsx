@@ -52,7 +52,7 @@ export default function PharmacyCard({
           <h3 className="text-sm font-semibold text-blue-900 truncate">
             {name}
           </h3>
-          <p className="text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
+          <p className="text-sm text-gray-600 line-clamp-2 min-h-10">
             {address}
           </p>
           <div className="flex items-center justify-end mt-2">
