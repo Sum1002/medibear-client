@@ -390,6 +390,36 @@ const OrderManagement = () => {
                 </span>
               </div>
             </div>
+
+            {/* Complaints */}
+            <div className="lg:col-span-2 bg-white rounded-lg border p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-600">Complaints</h3>
+                <span className="text-xs text-gray-500">
+                  {Array.isArray(selectedOrder.complaints) ? selectedOrder.complaints.length : 0} item(s)
+                </span>
+              </div>
+
+              {Array.isArray(selectedOrder.complaints) && selectedOrder.complaints.length > 0 ? (
+                <div className="space-y-3">
+                  {selectedOrder.complaints.map((c) => (
+                    <div key={c.id} className="bg-gray-50 rounded p-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-gray-900">
+                          {c.user?.name || 'User'}
+                        </p>
+                        {c.created_at && (
+                          <p className="text-xs text-gray-500">{formatDate(c.created_at)}</p>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-800 mt-1">{c.message}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No complaints for this order.</p>
+              )}
+            </div>
           </div>
         </div>
       )}

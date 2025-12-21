@@ -133,3 +133,20 @@ export const updateOrderStatus = (orderId, status) => {
     },
   );
 };
+
+// Complaints APIs
+export const getOrderComplaints = (orderId) => {
+  return axios.get(`${baseUrl}/orders/${orderId}/complaints`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const createOrderComplaint = (orderId, message) => {
+  return axios.post(
+    `${baseUrl}/orders/${orderId}/complaints`,
+    { message },
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+};

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getOrdersByUser } from "../service/http";
+import { getOrdersByUser, getOrderComplaints, createOrderComplaint } from "../service/http";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import toast, { Toaster } from "react-hot-toast";
@@ -10,6 +10,12 @@ export default function MyOrders() {
   const [error, setError] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [complaints, setComplaints] = useState([]);
+  const [complaintsLoading, setComplaintsLoading] = useState(false);
+  const [complaintsError, setComplaintsError] = useState(null);
+  const [showComplaintForm, setShowComplaintForm] = useState(false);
+  const [complaintText, setComplaintText] = useState("");
+  const [complaintSubmitting, setComplaintSubmitting] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -33,17 +39,67 @@ export default function MyOrders() {
   const handleOrderClick = (order) => {
     setSelectedOrder(order);
     setDrawerOpen(true);
+    fetchComplaints(order.id);
   };
 
   const closeDrawer = () => {
     setDrawerOpen(false);
     setTimeout(() => setSelectedOrder(null), 300);
+    setComplaints([]);
+    setShowComplaintForm(false);
+    setComplaintText("");
+  };
+
+  const fetchComplaints = async (orderId) => {
+    setComplaintsLoading(true);
+    setComplaintsError(null);
+    try {
+      const res = await getOrderComplaints(orderId);
+      const list = Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
+      setComplaints(list);
+    } catch (err) {
+      console.error("Error fetching complaints:", err);
+      setComplaintsError("Failed to load complaints");
+      setComplaints([]);
+    } finally {
+      setComplaintsLoading(false);
+    }
+  };
+
+  const submitComplaint = async () => {
+    if (!selectedOrder?.id) return;
+    const message = complaintText.trim();
+    if (!message) {
+      toast.error("Please write your complaint message");
+      return;
+    }
+    setComplaintSubmitting(true);
+    try {
+      const res = await createOrderComplaint(selectedOrder.id, message);
+      const created = res.data?.data || res.data || { message, id: Date.now(), created_at: new Date().toISOString() };
+      setComplaints((prev) => [created, ...prev]);
+      setComplaintText("");
+      setShowComplaintForm(false);
+      toast.success("Complaint submitted");
+    } catch (err) {
+      console.error("Error submitting complaint:", err);
+      const msg = err.response?.data?.message || "Failed to submit complaint";
+      toast.error(msg);
+    } finally {
+      setComplaintSubmitting(false);
+    }
   };
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
+      case "accepted":
+        return "bg-amber-100 text-amber-800";
+      case "in progress":
+        return "bg-blue-100 text-blue-800";
+      case "completed":
+        return "bg-green-100 text-green-800";
       case "confirmed":
         return "bg-blue-100 text-blue-800";
       case "delivered":
@@ -170,7 +226,7 @@ export default function MyOrders() {
 
       {/* Side Drawer */}
       {drawerOpen && selectedOrder && (
-        <div className="fixed right-0 top-0 bottom-0 w-96 bg-white shadow-lg z-50 overflow-y-auto transition-transform transform translate-x-0">
+        <div className="fixed right-0 top-0 bottom-0 w-[48rem] bg-white shadow-lg z-50 overflow-y-auto transition-transform transform translate-x-0">
           <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">Order Details</h2>
             <button
@@ -301,6 +357,68 @@ export default function MyOrders() {
                 <span className="text-blue-600">
                   ৳ {(parseFloat(selectedOrder.total_price) + 50).toFixed(2)}
                 </span>
+              </div>
+            </div>
+
+            {/* Complaints */}
+            <div className="border-t pt-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-600">Complaints</h3>
+                <button
+                  onClick={() => setShowComplaintForm((v) => !v)}
+                  className="px-3 py-1.5 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
+                >
+                  {showComplaintForm ? "Close" : "Complain"}
+                </button>
+              </div>
+
+              {showComplaintForm && (
+                <div className="bg-gray-50 rounded p-4 space-y-3">
+                  <label className="text-sm font-medium text-gray-700">Your complaint</label>
+                  <textarea
+                    className="w-full rounded border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    rows={3}
+                    placeholder="Type your complaint..."
+                    value={complaintText}
+                    onChange={(e) => setComplaintText(e.target.value)}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setShowComplaintForm(false)}
+                      className="px-3 py-1.5 rounded border text-sm"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={submitComplaint}
+                      disabled={complaintSubmitting}
+                      className={`px-3 py-1.5 rounded text-sm text-white ${complaintSubmitting ? "bg-blue-300" : "bg-blue-600 hover:bg-blue-700"}`}
+                    >
+                      {complaintSubmitting ? "Submitting..." : "Submit"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                {complaintsLoading ? (
+                  <p className="text-sm text-gray-500">Loading complaints...</p>
+                ) : complaintsError ? (
+                  <p className="text-sm text-red-600">{complaintsError}</p>
+                ) : complaints.length === 0 ? (
+                  <p className="text-sm text-gray-500">No complaints yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {complaints.map((c, idx) => (
+                      <div key={c.id || idx} className="bg-gray-50 rounded p-3">
+                        <p className="text-sm text-gray-900">{c.message}</p>
+                        {c.created_at && (
+                          <p className="text-xs text-gray-500 mt-1">{formatDate(c.created_at)}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
