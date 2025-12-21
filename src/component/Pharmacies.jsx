@@ -59,22 +59,22 @@ export default function Pharmacies() {
     <>
       <Navbar />
 
-      <div className="text-center mt-8 ml-4 mr-4 p-4">
-        <h1 className="text-2xl font-bold mb-6">Pharmacies</h1>
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow text-center mt-8 ml-4 mr-4 p-4 overflow-y-auto">
+          <h1 className="text-2xl font-bold mb-6">Pharmacies</h1>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded inline-block">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded inline-block">
+              {error}
+            </div>
+          )}
 
-        {loading ? (
-          <div className="py-12 text-gray-500">Loading pharmacies...</div>
-        ) : pharmacies.length === 0 ? (
-          <div className="py-12 text-gray-500">No pharmacies available.</div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+          {loading ? (
+            <div className="py-12 text-gray-500">Loading pharmacies...</div>
+          ) : pharmacies.length === 0 ? (
+            <div className="py-12 text-gray-500">No pharmacies available.</div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1 justify-items-center">
               {pharmacies.map((pharmacy, i) => (
                 <PharmacyCard
                   key={pharmacy.id || i}
@@ -89,27 +89,29 @@ export default function Pharmacies() {
                 />
               ))}
             </div>
+          )}
+        </div>
 
-            <div className="flex justify-center gap-4 mt-8 mb-8">
-              <button
-                onClick={handlePrev}
-                disabled={offset === 0 || loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Prev
-              </button>
-              <span className="px-4 py-2 text-gray-700">
-                Page {Math.floor(offset / limit) + 1}
-              </span>
-              <button
-                onClick={handleNext}
-                disabled={!hasMore || loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
-          </>
+        {pharmacies.length > 0 && (
+          <div className="sticky bottom-0 flex justify-center gap-4 py-6 bg-white border-t">
+            <button
+              onClick={handlePrev}
+              disabled={offset === 0 || loading}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Prev
+            </button>
+            <span className="px-4 py-2 text-gray-700">
+              Page {Math.floor(offset / limit) + 1}
+            </span>
+            <button
+              onClick={handleNext}
+              disabled={!hasMore || loading}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
         )}
       </div>
 
