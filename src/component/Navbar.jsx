@@ -64,6 +64,11 @@ export default function Navbar() {
               Products
             </a>
           </li>
+          <li>
+            <a href="/my-orders" className="hover:text-blue-700">
+              My Orders
+            </a>
+          </li>
         </ul>
         <div className="flex items-center gap-4">
           <a

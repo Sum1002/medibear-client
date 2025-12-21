@@ -111,3 +111,9 @@ export const createOrder = (payload) => {
     headers: getAuthHeaders(),
   });
 };
+
+export const getOrdersByUser = () => {
+  return axios.get(`${baseUrl}/orders-by-user`, {
+    headers: getAuthHeaders(),
+  });
+};

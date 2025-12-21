@@ -20,6 +20,7 @@ import Summary from './component/pharmacy-owner/Summary.jsx';
 import Suppliers from './component/pharmacy-owner/Suppliers.jsx';
 import ProductPage from './component/ProductPage.jsx';
 import Pharmacies from './component/Pharmacies.jsx';
+import MyOrders from './component/MyOrders.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -42,6 +43,7 @@ createRoot(document.getElementById('root')).render(
       <Route path="/products" element={<ProductPage />} />
       <Route path="/pharmacies" element={<Pharmacies />} />
       <Route path="/checkout" element={<Cart />} />
+      <Route path="/my-orders" element={<MyOrders />} />
       </Routes>
   </BrowserRouter>,
 )
