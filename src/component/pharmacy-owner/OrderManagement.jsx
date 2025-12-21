@@ -328,6 +328,27 @@ const OrderManagement = () => {
               </div>
             </div>
 
+            {/* Delivery Address */}
+            {selectedOrder.address && (
+              <div className="lg:col-span-2 bg-gray-50 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                  Delivery Address
+                </h3>
+                <div className="space-y-1">
+                  <p className="text-gray-900">{selectedOrder.address.address_line_1}</p>
+                  {selectedOrder.address.address_line_2 && (
+                    <p className="text-gray-900">{selectedOrder.address.address_line_2}</p>
+                  )}
+                  <p className="text-gray-900">
+                    {selectedOrder.address.city}, {selectedOrder.address.state} {selectedOrder.address.zip_code}
+                  </p>
+                  {selectedOrder.address.country && (
+                    <p className="text-gray-900">{selectedOrder.address.country}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Items */}
             <div className="lg:col-span-2 bg-white rounded-lg border p-4">
               <h3 className="text-sm font-semibold text-gray-600 mb-3">

@@ -297,7 +297,27 @@ export default function MyOrders() {
               </div>
             </div>
 
-            {/* Items */}
+            {/* Delivery Address */}
+            {selectedOrder.address && (
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                  Delivery Address
+                </h3>
+                <div className="bg-gray-50 rounded p-4">
+                  <p className="text-gray-900">{selectedOrder.address.address_line_1}</p>
+                  {selectedOrder.address.address_line_2 && (
+                    <p className="text-gray-900">{selectedOrder.address.address_line_2}</p>
+                  )}
+                  <p className="text-gray-900 mt-1">
+                    {selectedOrder.address.city}, {selectedOrder.address.state} {selectedOrder.address.zip_code}
+                  </p>
+                  {selectedOrder.address.country && (
+                    <p className="text-gray-900">{selectedOrder.address.country}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div>
               <h3 className="text-sm font-semibold text-gray-600 mb-3">
                 Items
