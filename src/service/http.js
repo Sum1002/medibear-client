@@ -117,3 +117,9 @@ export const getOrdersByUser = () => {
     headers: getAuthHeaders(),
   });
 };
+
+export const getOrdersByPharmacy = () => {
+  return axios.get(`${baseUrl}/orders-by-pharmacy`, {
+    headers: getAuthHeaders(),
+  });
+};
