@@ -112,21 +112,11 @@ const PharmacyDashboard = () => {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-500">Order Management</p>
-                      <div className="text-2xl font-bold text-blue-600">
-                        32 New
+                      <div className="text-2xl font-bold text-blue-600 mt-2">
+                        Orders
                       </div>
-                    </div>
-                    <div className="text-sm text-blue-600 font-medium">
-                      Processing
-                    </div>
                   </div>
-                  <p className="text-sm text-gray-500 mt-3">
-                    View and update incoming orders, print invoices, manage
-                    delivery.
-                  </p>
                 </div>
               </div>
             </Link>

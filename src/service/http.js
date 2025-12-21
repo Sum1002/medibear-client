@@ -123,3 +123,13 @@ export const getOrdersByPharmacy = () => {
     headers: getAuthHeaders(),
   });
 };
+
+export const updateOrderStatus = (orderId, status) => {
+  return axios.post(
+    `${baseUrl}/orders/${orderId}/status`,
+    { status },
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+};

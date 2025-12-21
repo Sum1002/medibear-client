@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import PharmacyOwnerNav from './PharmacyOwnerNav';
-import { getOrdersByPharmacy } from '../../service/http';
+import { getOrdersByPharmacy, updateOrderStatus } from '../../service/http';
 import toast, { Toaster } from 'react-hot-toast';
 
 const OrderManagement = () => {
@@ -12,6 +12,8 @@ const OrderManagement = () => {
   const [showCompleted, setShowCompleted] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [statusUpdating, setStatusUpdating] = useState(false);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -32,24 +34,56 @@ const OrderManagement = () => {
     }
   };
 
-  const filteredOrders = orders.filter((o) =>
-    showCompleted ? true : o.status === 'pending' || o.status === 'confirmed',
-  );
+  const filteredOrders = orders.filter((o) => {
+    if (showCompleted) return true;
+    const activeStatuses = ['pending', 'accepted', 'in progress', 'completed'];
+    return activeStatuses.includes((o.status || '').toLowerCase());
+  });
 
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
     setDrawerOpen(true);
+    setStatusDropdownOpen(false);
+  };
+
+  const handleStatusSave = async () => {
+    if (!selectedOrder?.id || !selectedOrder?.status) return;
+    setStatusUpdating(true);
+    try {
+      await updateOrderStatus(selectedOrder.id, selectedOrder.status);
+      toast.success('Status updated');
+
+      // Sync list and selected order locally
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === selectedOrder.id ? { ...o, status: selectedOrder.status } : o,
+        ),
+      );
+    } catch (err) {
+      console.error('Error updating status:', err);
+      const message = err.response?.data?.message || 'Failed to update status';
+      toast.error(message);
+    } finally {
+      setStatusUpdating(false);
+    }
   };
 
   const closeDrawer = () => {
     setDrawerOpen(false);
     setTimeout(() => setSelectedOrder(null), 300);
+    setStatusDropdownOpen(false);
   };
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
+      case 'accepted':
+        return 'bg-amber-100 text-amber-800';
+      case 'in progress':
+        return 'bg-blue-100 text-blue-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
       case 'confirmed':
         return 'bg-blue-100 text-blue-800';
       case 'delivered':
@@ -193,7 +227,7 @@ const OrderManagement = () => {
 
       {/* Side Drawer */}
       {drawerOpen && selectedOrder && (
-        <div className="fixed right-0 top-0 bottom-0 w-96 bg-white shadow-lg z-50 overflow-y-auto transition-transform transform translate-x-0">
+        <div className="fixed right-0 top-0 bottom-0 w-[720px] bg-white shadow-2xl z-50 overflow-y-auto transition-transform transform translate-x-0">
           <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">Order Details</h2>
             <button
@@ -204,9 +238,9 @@ const OrderManagement = () => {
             </button>
           </div>
 
-          <div className="p-6 space-y-6">
+          <div className="p-6 space-y-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Order Header */}
-            <div>
+            <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-sm font-semibold text-gray-600 mb-2">
                 Order ID
               </h3>
@@ -216,56 +250,86 @@ const OrderManagement = () => {
             </div>
 
             {/* Order Status */}
-            <div>
+            <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-sm font-semibold text-gray-600 mb-2">
                 Status
               </h3>
-              <span
-                className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(
-                  selectedOrder.status,
-                )}`}
-              >
-                {selectedOrder.status}
-              </span>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="relative w-full max-w-xs">
+                  <button
+                    type="button"
+                    onClick={() => setStatusDropdownOpen((v) => !v)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-left flex items-center justify-between text-sm"
+                  >
+                    <span className="capitalize">{selectedOrder.status || 'Select status'}</span>
+                    <span className="text-gray-500 text-xs">▼</span>
+                  </button>
+                  {statusDropdownOpen && (
+                    <div className="absolute left-0 right-0 border border-gray-300 border-t-0 rounded-b bg-white shadow-lg max-h-48 overflow-y-auto z-50">
+                      {['pending', 'accepted', 'in progress', 'completed'].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => {
+                            setSelectedOrder((prev) => (prev ? { ...prev, status: s } : prev));
+                            setStatusDropdownOpen(false);
+                          }}
+                          className="w-full px-3 py-2 text-left hover:bg-blue-50 text-gray-700 border-b last:border-b-0 capitalize text-sm"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={handleStatusSave}
+                  disabled={statusUpdating}
+                  className="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-60"
+                >
+                  {statusUpdating ? 'Saving...' : 'Save'}
+                </button>
+              </div>
             </div>
 
             {/* Customer Info */}
-            <div>
+            <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-sm font-semibold text-gray-600 mb-2">
                 Customer
               </h3>
-              <div className="bg-gray-50 rounded p-4">
+              <div className="space-y-1">
                 <p className="font-semibold text-gray-900">
                   {selectedOrder.user?.name}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-600">
                   {selectedOrder.user?.phone}
                 </p>
               </div>
             </div>
 
             {/* Payment Info */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-600 mb-1">
-                  Payment Method
-                </h3>
-                <p className="text-gray-900 font-medium">
-                  {selectedOrder.payment_type?.toUpperCase()}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-600 mb-1">
-                  Order Date
-                </h3>
-                <p className="text-gray-900 font-medium">
-                  {formatDate(selectedOrder.created_at)}
-                </p>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                Payment & Date
+              </h3>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-gray-500">Payment</p>
+                  <p className="text-gray-900 font-semibold">
+                    {selectedOrder.payment_type?.toUpperCase()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Order Date</p>
+                  <p className="text-gray-900 font-semibold">
+                    {formatDate(selectedOrder.created_at)}
+                  </p>
+                </div>
               </div>
             </div>
 
             {/* Items */}
-            <div>
+            <div className="lg:col-span-2 bg-white rounded-lg border p-4">
               <h3 className="text-sm font-semibold text-gray-600 mb-3">
                 Items
               </h3>
@@ -308,22 +372,21 @@ const OrderManagement = () => {
             </div>
 
             {/* Price Breakdown */}
-            <div className="border-t pt-4 space-y-2">
+            <div className="lg:col-span-2 bg-gray-50 rounded-lg p-4 space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
                 <span className="font-medium text-gray-900">
-                  ৳{' '}
-                  {(parseFloat(selectedOrder.total_price)).toFixed(2)}
+                  ৳ {(parseFloat(selectedOrder.total_price) || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Delivery</span>
-                <span className="font-medium text-gray-900">৳ 50.00</span>
+                <span className="font-medium text-gray-900">৳ 0.00</span>
               </div>
               <div className="flex justify-between border-t pt-2 text-lg font-bold">
                 <span>Total</span>
                 <span className="text-blue-600">
-                  ৳ {(parseFloat(selectedOrder.total_price) + 50).toFixed(2)}
+                  ৳ {(parseFloat(selectedOrder.total_price) || 0).toFixed(2)}
                 </span>
               </div>
             </div>
