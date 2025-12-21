@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import Button from "./Button.jsx";
 
 export default function Navbar() {
+  const [cartCount, setCartCount] = useState(0);
+
   const getLoggedInUser = () => {
     const user = localStorage.getItem("logged_in_user");
     return user ? JSON.parse(user) : null;
@@ -11,6 +14,29 @@ export default function Navbar() {
     localStorage.removeItem("auth_token");
     window.location.href = "/login";
   };
+
+  const updateCartCount = () => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("cart")) || [];
+      const total = stored.reduce((sum, item) => sum + (item.quantity || 1), 0);
+      setCartCount(total);
+    } catch (e) {
+      setCartCount(0);
+    }
+  };
+
+  useEffect(() => {
+    updateCartCount();
+
+    const handler = () => updateCartCount();
+    window.addEventListener("cart-updated", handler);
+    window.addEventListener("storage", handler);
+
+    return () => {
+      window.removeEventListener("cart-updated", handler);
+      window.removeEventListener("storage", handler);
+    };
+  }, []);
 
   return (
     <nav className="bg-white shadow py-2">
@@ -60,7 +86,7 @@ export default function Navbar() {
               />
             </svg>
             <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-medium leading-none text-white bg-red-600 rounded-full">
-              0
+              {cartCount}
             </span>
           </a>
           {getLoggedInUser() ? (

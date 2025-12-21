@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
+import toast, { Toaster } from "react-hot-toast";
 import { getPopularProductsWithPagination } from "../service/http";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -14,6 +15,7 @@ export default function ProductPage() {
   const [searchParams] = useSearchParams();
 
   const pharmacyId = searchParams.get("pharmacyId");
+  const pharmacyName = searchParams.get("pharmacyName");
   const prevPharmacyIdRef = useRef(pharmacyId);
 
   const limit = 20;
@@ -38,6 +40,47 @@ export default function ProductPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const addToCart = (product) => {
+    if (!product) return;
+
+    const existing = (() => {
+      try {
+        return JSON.parse(localStorage.getItem("cart")) || [];
+      } catch (e) {
+        return [];
+      }
+    })();
+
+    const payload = {
+      id: product.id,
+      name: product.name,
+      price: Number(product.price) || 0,
+      pharmacyId: product.user?.id,
+      pharmacyName: product.user?.name || "Unknown",
+      image:
+        product.image_path
+          ? `http://localhost:8000/storage/${product.image_path}`
+          : "/medi-Image/MediBear-Main-Logo.png",
+    };
+
+    const index = existing.findIndex((item) => item.id === payload.id);
+
+    if (index >= 0) {
+      existing[index] = {
+        ...existing[index],
+        quantity: (existing[index].quantity || 1) + 1,
+      };
+    } else {
+      existing.push({ ...payload, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(existing));
+    toast.success("Added to cart");
+
+    // Notify listeners (e.g., navbar badge) in this tab
+    window.dispatchEvent(new Event("cart-updated"));
   };
 
   useEffect(() => {
@@ -72,14 +115,16 @@ export default function ProductPage() {
   return (
     <>
       <Navbar />
+      <Toaster position="top-right" />
 
       <div className="flex flex-col min-h-screen">
         <div className="flex-grow text-center mt-8 ml-4 mr-4 p-4 overflow-y-auto">
-          <h1 className="text-2xl font-bold mb-6">All Products</h1>
-          {pharmacyId && (
-            <p className="text-gray-600 mb-4">
-              Showing products for pharmacy ID {pharmacyId}
-            </p>
+          {pharmacyId && pharmacyName && (
+            <h1 className="text-2xl font-bold mb-6">{pharmacyName}</h1>
+          )}
+
+          {!pharmacyId && (
+            <h1 className="text-2xl font-bold mb-6">All Products</h1>
           )}
 
           {error && (
@@ -105,6 +150,7 @@ export default function ProductPage() {
                   productName={product.name}
                   pharmacyName={product.user?.name || "Unknown"}
                   price={product.price || 0}
+                  onAdd={() => addToCart(product)}
                 />
               ))}
             </div>

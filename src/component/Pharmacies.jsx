@@ -50,9 +50,9 @@ export default function Pharmacies() {
     }
   };
 
-  const handleViewProducts = (pharmacyId) => {
+  const handleViewProducts = (pharmacyId, pharmacyName) => {
     if (!pharmacyId) return;
-    navigate(`/products?pharmacyId=${pharmacyId}`);
+    navigate(`/products?pharmacyId=${pharmacyId}&pharmacyName=${encodeURIComponent(pharmacyName)}`);
   };
 
   return (
@@ -85,7 +85,7 @@ export default function Pharmacies() {
                   }
                   name={pharmacy.name}
                   address={pharmacy.address || ""}
-                  onView={() => handleViewProducts(pharmacy.id)}
+                  onView={() => handleViewProducts(pharmacy.id, pharmacy.name)}
                 />
               ))}
             </div>

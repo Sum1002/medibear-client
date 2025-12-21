@@ -5,6 +5,7 @@ export default function ProductCard({
   pharmacyName = "HealthPlus",
   price = 220,
   img = "/medi-Image/m1.jpg",
+  onAdd,
 }) {
   return (
     <div className="cardsection p-1 bg-white">
@@ -24,7 +25,7 @@ export default function ProductCard({
           <p className="text-sm text-gray-600">{pharmacyName}</p>
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">৳ {price}</span>
-            <Button buttonText={"ADD"} />
+            <Button buttonText={"ADD"} onClick={onAdd} />
           </div>
         </div>
       </div>
