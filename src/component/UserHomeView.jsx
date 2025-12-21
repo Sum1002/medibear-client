@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getPopularProducts } from "../service/http";
+import toast, { Toaster } from "react-hot-toast";
 import Button from "./Button";
 import Footer from "./Footer";
 import HeroSection from "./HeroSection";
@@ -30,9 +31,51 @@ export default function UserHomeView() {
       });
   }, []);
 
+  const addToCart = (product) => {
+    if (!product) return;
+
+    const existing = (() => {
+      try {
+        return JSON.parse(localStorage.getItem("cart")) || [];
+      } catch (e) {
+        return [];
+      }
+    })();
+
+    const payload = {
+      id: product.id,
+      name: product.name,
+      price: Number(product.price) || 0,
+      pharmacyId: product.user?.id,
+      pharmacyName: product.user?.name || "Unknown",
+      image:
+        product.image_path
+          ? `http://localhost:8000/storage/${product.image_path}`
+          : "/medi-Image/MediBear-Main-Logo.png",
+    };
+
+    const index = existing.findIndex((item) => item.id === payload.id);
+
+    if (index >= 0) {
+      existing[index] = {
+        ...existing[index],
+        quantity: (existing[index].quantity || 1) + 1,
+      };
+    } else {
+      existing.push({ ...payload, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(existing));
+    toast.success("Added to cart");
+
+    // Notify listeners (e.g., navbar badge) in this tab
+    window.dispatchEvent(new Event("cart-updated"));
+  };
+
   return (
     <>
       <Navbar />
+      <Toaster position="top-right" />
       <HeroSection />
       {/* Popular categories: 6 small cards */}
       <div className="text-center mt-8 ml-4 mr-4 p-4">
@@ -56,7 +99,8 @@ export default function UserHomeView() {
                 img={"http://localhost:8000/storage/" + product.image_path}
                 productName={product.name}
                 pharmacyName={product.user.name}
-                price={199 + i * 10}
+                onAdd={() => addToCart(product)}
+                price={product.price}
               />
             ))
           }

@@ -62,7 +62,7 @@ export const createProduct = (productData) => {
 };
 
 export const updateProduct = (productId, productData) => {
-  return axios.put(`${baseUrl}/products/${productId}`, productData, {
+  return axios.post(`${baseUrl}/products/${productId}`, productData, {
     headers: getAuthHeaders(true), // true indicates FormData
   });
 };
