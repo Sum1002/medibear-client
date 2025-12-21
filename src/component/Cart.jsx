@@ -1,57 +1,73 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import Navbar from './Navbar';
 
 export default function Cart() {
-  const [cart, setCart] = useState([
-    {
-      id: 'p1',
-      name: 'Fossical-D',
-      price: 450,
-      qty: 1,
-      img: './medi-Image/m5.jpg',
-    },
-    {
-      id: 'p2',
-      name: 'Zicam Drops',
-      price: 450,
-      qty: 2,
-      img: './medi-Image/m1.jpg',
-    },
-  ]);
+  const [cart, setCart] = useState([]);
 
   const [payment, setPayment] = useState('cod');
 
   const delivery = 50.0;
 
-  const subtotal = useMemo(() => cart.reduce((s, i) => s + i.price * i.qty, 0), [cart]);
-  const grandTotal = useMemo(() => subtotal + delivery, [subtotal]);
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('cart')) || [];
+      setCart(stored);
+    } catch (e) {
+      setCart([]);
+    }
 
-  function inc(idx) {
+    const handleStorage = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem('cart')) || [];
+        setCart(stored);
+      } catch (e) {
+        setCart([]);
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cart-updated'));
+  }, [cart]);
+
+  const subtotal = useMemo(
+    () => cart.reduce((s, i) => s + (Number(i.price) || 0) * (i.quantity || 1), 0),
+    [cart],
+  );
+  const grandTotal = useMemo(() => subtotal + (cart.length > 0 ? delivery : 0), [subtotal, cart.length]);
+
+  const inc = (idx) => {
     setCart((prev) => {
       const next = [...prev];
-      next[idx] = { ...next[idx], qty: next[idx].qty + 1 };
+      next[idx] = { ...next[idx], quantity: (next[idx].quantity || 1) + 1 };
       return next;
     });
-  }
+  };
 
-  function dec(idx) {
+  const dec = (idx) => {
     setCart((prev) => {
       const next = [...prev];
-      if (next[idx].qty > 1) {
-        next[idx] = { ...next[idx], qty: next[idx].qty - 1 };
+      const qty = next[idx].quantity || 1;
+      if (qty > 1) {
+        next[idx] = { ...next[idx], quantity: qty - 1 };
       } else {
         next.splice(idx, 1);
       }
       return next;
     });
-  }
+  };
 
-  function removeItem(idx) {
+  const removeItem = (idx) => {
     setCart((prev) => {
       const next = [...prev];
       next.splice(idx, 1);
       return next;
     });
-  }
+  };
 
   function placeOrder() {
     if (cart.length === 0) {
@@ -67,7 +83,9 @@ export default function Cart() {
   }
 
   return (
-    <main className="max-w-screen-lg mx-auto px-6 py-8">
+    <>
+      <Navbar />
+      <main className="max-w-screen-lg mx-auto px-6 py-8">
       <header className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-blue-900">Your Cart</h1>
@@ -97,22 +115,34 @@ export default function Cart() {
                   </tr>
                 ) : (
                   cart.map((it, idx) => (
-                    <tr key={it.id}>
+                    <tr key={it.id || idx}>
                       <td className="px-4 py-3 flex items-center gap-3">
-                        <img src={it.img} alt={it.name} className="w-16 h-16 object-contain rounded" />
+                        <img
+                          src={
+                            it.image
+                              ? it.image
+                              : '/medi-Image/MediBear-Main-Logo.png'
+                          }
+                          alt={it.name}
+                          className="w-16 h-16 object-contain rounded"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/medi-Image/MediBear-Main-Logo.png';
+                          }}
+                        />
                         <div>
                           <div className="font-medium">{it.name}</div>
                         </div>
                       </td>
-                      <td className="px-4 py-3">৳ {it.price.toFixed(2)}</td>
+                      <td className="px-4 py-3">৳ {(Number(it.price) || 0).toFixed(2)}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <button onClick={() => dec(idx)} className="px-2 py-1 bg-gray-100 rounded">-</button>
-                          <div>{it.qty}</div>
+                          <div>{it.quantity || 1}</div>
                           <button onClick={() => inc(idx)} className="px-2 py-1 bg-gray-100 rounded">+</button>
                         </div>
                       </td>
-                      <td className="px-4 py-3">৳ {(it.price * it.qty).toFixed(2)}</td>
+                      <td className="px-4 py-3">৳ {((Number(it.price) || 0) * (it.quantity || 1)).toFixed(2)}</td>
                       <td className="px-4 py-3">
                         <button onClick={() => removeItem(idx)} className="text-sm text-red-600">Remove</button>
                       </td>
@@ -162,6 +192,7 @@ export default function Cart() {
         </aside>
       </section>
     </main>
+    </>
   );
 }
 

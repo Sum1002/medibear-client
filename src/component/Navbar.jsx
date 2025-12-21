@@ -67,7 +67,7 @@ export default function Navbar() {
         </ul>
         <div className="flex items-center gap-4">
           <a
-            href="cart.html"
+            href="/checkout"
             className="relative text-gray-700 hover:text-blue-700"
             aria-label="Cart"
           >
