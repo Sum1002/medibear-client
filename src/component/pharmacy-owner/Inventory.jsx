@@ -161,7 +161,7 @@ const Inventory = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
-      <PharmacyOwnerNav showName/>
+      <PharmacyOwnerNav show/>
 
       <main className="flex-1 max-w-screen-2xl mx-auto px-6 py-8 w-full">
         <header className="flex items-center justify-between mb-6">

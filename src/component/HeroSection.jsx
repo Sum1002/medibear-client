@@ -7,8 +7,8 @@ export default function HeroSection() {
         <p className="mt-2 text-sm md:text-base text-blue-100 max-w-xl">Fast, reliable medicine delivery from verified pharmacies near you</p>
       </div>
       <div className="flex gap-4 mt-4 md:mt-0">
-        <a href="#" className="bg-white text-blue-950 px-5 py-2 rounded-md font-semibold shadow hover:bg-blue-50 transition">Order Now</a>
-        <a href="p-registration.html" className="border border-white px-5 py-2 rounded-md font-semibold text-white hover:bg-white hover:text-blue-700 transition">Join as Pharmacy</a>
+        <a href="/cart" className="bg-white text-blue-950 px-5 py-2 rounded-md font-semibold shadow hover:bg-blue-50 transition">Order Now</a>
+        <a href="/register" className="border border-white px-5 py-2 rounded-md font-semibold text-white hover:bg-white hover:text-blue-700 transition">Join as Pharmacy</a>
       </div>
     </div>
   </section>

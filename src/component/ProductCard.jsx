@@ -8,8 +8,8 @@ export default function ProductCard({
   onAdd,
 }) {
   return (
-    <div className="cardsection p-1 bg-white">
-      <div className="card w-60 bg-white border border-gray-300 rounded-xl p-1 hover:shadow-lg transform hover:-translate-y-1 transition">
+    <div className="cardsection w-full">
+      <div className="card w-full bg-white border border-gray-300 rounded-xl p-1 hover:shadow-lg transform hover:-translate-y-1 transition">
         <img
           src={img}
           alt={productName}

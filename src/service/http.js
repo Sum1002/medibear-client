@@ -165,6 +165,18 @@ export const getUserDetails = () => {
   });
 };
 
+export const updateUserProfile = (profileData) => {
+  return axios.put(`${baseUrl}/user/details`, profileData, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const uploadProfilePicture = (formData) => {
+  return axios.post(`${baseUrl}/user/update-profile`, formData, {
+    headers: getAuthHeaders(true), // true for FormData
+  });
+};
+
 // Address APIs
 export const createAddress = (addressData) => {
   return axios.post(`${baseUrl}/addresses`, addressData, {

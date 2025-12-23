@@ -39,7 +39,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-white shadow py-2">
+    <nav className="sticky top-0 z-50 bg-white shadow py-2">
       <div className="max-w-screen-2xl mx-auto px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img
@@ -95,20 +95,22 @@ export default function Navbar() {
             </span>
           </a>
           {getLoggedInUser() ? (
-            <a href="/profile" className="text-blue-700 hover:text-blue-900 font-medium hover:underline">
-              Hello, {getLoggedInUser().name}
-            </a>
+            <>
+              <a href="/profile" className="text-blue-700 hover:text-blue-900 font-medium hover:underline">
+                Hello, {getLoggedInUser().name}
+              </a>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <a href="/login">
               <Button buttonText="Login" />
             </a>
           )}
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
-          >
-            Logout
-          </button>
         </div>
       </div>
     </nav>

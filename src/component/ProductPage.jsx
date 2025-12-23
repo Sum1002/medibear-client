@@ -118,43 +118,45 @@ export default function ProductPage() {
       <Toaster position="top-right" />
 
       <div className="flex flex-col min-h-screen">
-        <div className="grow text-center mt-8 ml-4 mr-4 p-4 overflow-y-auto">
-          {pharmacyId && pharmacyName && (
-            <h1 className="text-2xl font-bold mb-6">{pharmacyName}</h1>
-          )}
+        <div className="max-w-screen-2xl mx-auto px-6 w-full">
+          <div className="mt-12 mb-12">
+            {pharmacyId && pharmacyName && (
+              <h1 className="text-2xl font-bold mb-8 text-gray-800 text-center">{pharmacyName}</h1>
+            )}
 
-          {!pharmacyId && (
-            <h1 className="text-2xl font-bold mb-6">All Products</h1>
-          )}
+            {!pharmacyId && (
+              <h1 className="text-2xl font-bold mb-8 text-gray-800 text-center">All Products</h1>
+            )}
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded inline-block">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-center">
+                {error}
+              </div>
+            )}
 
-          {loading ? (
-            <div className="py-12 text-gray-500">Loading products...</div>
-          ) : products.length === 0 ? (
-            <div className="py-12 text-gray-500">No products available.</div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1 justify-items-center">
-              {products.map((product, i) => (
-                <ProductCard
-                  key={product.id || i}
-                  img={
-                    product.image_path
-                      ? `http://localhost:8000/storage/${product.image_path}`
-                      : "/medi-Image/MediBear-Main-Logo.png"
-                  }
-                  productName={product.name}
-                  pharmacyName={product.user?.name || "Unknown"}
-                  price={product.price || 0}
-                  onAdd={() => addToCart(product)}
-                />
-              ))}
-            </div>
-          )}
+            {loading ? (
+              <div className="py-12 text-gray-500 text-center">Loading products...</div>
+            ) : products.length === 0 ? (
+              <div className="py-12 text-gray-500 text-center">No products available.</div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {products.map((product, i) => (
+                  <ProductCard
+                    key={product.id || i}
+                    img={
+                      product.image_path
+                        ? `http://localhost:8000/storage/${product.image_path}`
+                        : "/medi-Image/MediBear-Main-Logo.png"
+                    }
+                    productName={product.name}
+                    pharmacyName={product.user?.name || "Unknown"}
+                    price={product.price || 0}
+                    onAdd={() => addToCart(product)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {products.length > 0 && (

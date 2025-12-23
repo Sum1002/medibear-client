@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import {
   getUserDetails,
+  updateUserProfile,
+  uploadProfilePicture,
   createAddress,
   updateAddress,
   deleteAddress,
@@ -21,6 +23,13 @@ export default function Profile() {
   const [favorites, setFavorites] = useState([]);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
+  const [showProfileForm, setShowProfileForm] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const [profilePicture, setProfilePicture] = useState(null);
   const [addressForm, setAddressForm] = useState({
     address_line_1: "",
     address_line_2: "",
@@ -143,6 +152,66 @@ export default function Profile() {
     }
   };
 
+  const handleEditProfile = () => {
+    setProfileForm({
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+    });
+    setShowProfileForm(true);
+  };
+
+  const handleProfileFormChange = (field, value) => {
+    setProfileForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size must be less than 5MB");
+        return;
+      }
+      setProfilePicture(file);
+    }
+  };
+
+  const handleSubmitProfile = async (e) => {
+    e.preventDefault();
+    if (!profileForm.name || !profileForm.email) {
+      toast.error("Name and email are required");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      // Combine profile data and picture in FormData
+      const formData = new FormData();
+      formData.append("name", profileForm.name);
+      formData.append("email", profileForm.email);
+      if (profileForm.phone) {
+        formData.append("phone", profileForm.phone);
+      }
+      
+      // Add profile picture if selected
+      if (profilePicture) {
+        formData.append("profile_picture", profilePicture);
+      }
+      
+      await uploadProfilePicture(formData);
+      
+      toast.success("Profile updated successfully");
+      setShowProfileForm(false);
+      setProfilePicture(null);
+      fetchUserDetails();
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      const msg = err.response?.data?.message || "Failed to update profile";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -165,17 +234,122 @@ export default function Profile() {
             <>
               {/* User Info */}
               <section className="bg-white rounded-lg shadow border border-gray-100 p-6 mb-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600">
-                    {user?.name?.charAt(0).toUpperCase()}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      {user?.profile_picture ? (
+                        <img
+                          src={`http://localhost:8000/storage/${user.profile_picture}`}
+                          alt={user?.name}
+                          className="w-16 h-16 rounded-full object-cover border-2 border-blue-100"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className={`w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600 ${user?.profile_picture ? 'hidden' : ''}`}
+                      >
+                        {user?.name?.charAt(0).toUpperCase()}
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-semibold text-gray-900">
+                        {user?.name}
+                      </h2>
+                      <p className="text-sm text-gray-500">User ID: {user?.id}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-semibold text-gray-900">
-                      {user?.name}
-                    </h2>
-                    <p className="text-sm text-gray-500">User ID: {user?.id}</p>
-                  </div>
+                  <button
+                    onClick={handleEditProfile}
+                    className="px-4 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700 flex items-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    Edit Profile
+                  </button>
                 </div>
+
+                {/* Profile Edit Form */}
+                {showProfileForm && (
+                  <form onSubmit={handleSubmitProfile} className="bg-gray-50 rounded p-4 mb-6">
+                    <h3 className="text-lg font-semibold mb-4">Edit Profile</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Name <span className="text-red-600">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={profileForm.name}
+                          onChange={(e) => handleProfileFormChange("name", e.target.value)}
+                          className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email <span className="text-red-600">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          value={profileForm.email}
+                          onChange={(e) => handleProfileFormChange("email", e.target.value)}
+                          className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone
+                        </label>
+                        <input
+                          type="text"
+                          value={profileForm.phone}
+                          onChange={(e) => handleProfileFormChange("phone", e.target.value)}
+                          className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Profile Picture
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleProfilePictureChange}
+                          className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                        {profilePicture && (
+                          <p className="text-xs text-gray-600 mt-1">Selected: {profilePicture.name}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className={`px-4 py-2 rounded text-sm text-white ${
+                          submitting ? "bg-blue-300" : "bg-blue-600 hover:bg-blue-700"
+                        }`}
+                      >
+                        {submitting ? "Saving..." : "Save Changes"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowProfileForm(false);
+                          setProfilePicture(null);
+                        }}
+                        className="px-4 py-2 rounded border text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Email</p>

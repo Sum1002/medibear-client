@@ -77,41 +77,46 @@ export default function UserHomeView() {
       <Navbar />
       <Toaster position="top-right" />
       <HeroSection />
-      {/* Popular categories: 6 small cards */}
-      <div className="text-center mt-8 ml-4 mr-4 p-4">
-        <h2 className="text-xl font-bold mb-6">Popular Categories</h2>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 justify-items-stretch items-stretch">
-          {categories.map((c, idx) => (
-            <div className="w-full" key={idx}>
-              <PopularCategoryCard img={c.img} name={c.name} />
-            </div>
-          ))}
+      
+      {/* Main Content Container with Alignment */}
+      <div className="max-w-screen-2xl mx-auto px-6">
+        {/* Popular categories: 6 small cards */}
+        <div className="mt-12 mb-16">
+          <h2 className="text-2xl font-bold mb-8 text-gray-800 text-center">Popular Categories</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8 justify-items-stretch">
+            {categories.map((c, idx) => (
+              <div key={idx}>
+                <PopularCategoryCard img={c.img} name={c.name} />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Popular products */}
-      <div className="text-center mt-8 ml-4 mr-4 p-4">
-        <h1 className="text-xl font-bold mb-6">Popular Product</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-          { popularProducts.map((product, i) => (
-              <ProductCard
-                key={i}
-                img={"http://localhost:8000/storage/" + product.image_path}
-                productName={product.name}
-                pharmacyName={product.user.name}
-                onAdd={() => addToCart(product)}
-                price={product.price}
-              />
-            ))
-          }
-        </div>
-        {/* Centered button under products */}
-        <div className="flex justify-center mt-6">
-          <Button buttonText="View More" onClick={() => {
-            window.location.href = "/products";
-          }}/>
+        {/* Popular products */}
+        <div className="mt-12 mb-16">
+          <h2 className="text-2xl font-bold mb-8 text-gray-800 text-center">Popular Products</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6 justify-items-stretch">
+            { popularProducts.map((product, i) => (
+                <ProductCard
+                  key={i}
+                  img={"http://localhost:8000/storage/" + product.image_path}
+                  productName={product.name}
+                  pharmacyName={product.user.name}
+                  onAdd={() => addToCart(product)}
+                  price={product.price}
+                />
+              ))
+            }
+          </div>
+          {/* Centered button under products */}
+          <div className="flex justify-center mt-8">
+            <Button buttonText="View More" onClick={() => {
+              window.location.href = "/products";
+            }}/>
+          </div>
         </div>
       </div>
+      
       <Footer />
     </>
   );
