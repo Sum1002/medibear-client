@@ -26,38 +26,41 @@ const PharmacyOwnerNav = ({ extraLinks = [], showName = false }) => {
   ];
 
   return (
-    <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm">
-      <div className="flex items-center gap-3">
-        <img
-          src="/medi-Image/MediBear-Main-Logo.png"
-          alt="MediBear"
-          className="h-10"
-        />
-      </div>
-      <div className="flex items-center gap-3">
-        {links.map((link) => (
-          <Link
-            key={link.to}
-            to={link.to}
-            className="text-sm text-gray-600 hover:text-blue-600"
+    <nav className="sticky top-0 z-50 bg-white shadow py-2">
+      <div className="max-w-screen-2xl mx-auto px-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img
+            src="/medi-Image/MediBear-Main-Logo.png"
+            alt="MediBear"
+            className="h-10"
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          {links.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="text-sm text-gray-600 hover:text-blue-600"
+            >
+              {link.label}
+            </Link>
+          ))}
+          {showName && (
+            <Link
+              to="/pharmacy/profile"
+              className="text-blue-700 hover:text-blue-900 font-medium hover:underline"
+              title="Pharmacy profile"
+            >
+              Hello, {getPharmacyName()}
+            </Link>
+          )}
+          <button
+            onClick={handleLogout}
+            className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
           >
-            {link.label}
-          </Link>
-        ))}
-        {showName && (
-          <span
-            className="text-gray-600 hover:text-blue-600"
-            title="Pharmacy profile"
-          >
-            {getPharmacyName()}
-          </span>
-        )}
-        <button
-          onClick={handleLogout}
-          className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
-        >
-          Logout
-        </button>
+            Logout
+          </button>
+        </div>
       </div>
     </nav>
   );

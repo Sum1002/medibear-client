@@ -206,3 +206,16 @@ export const removeFavoritePharmacy = (pharmacyId) => {
     headers: getAuthHeaders(),
   });
 };
+
+// Pharmacy Profile APIs
+export const getPharmacyProfile = () => {
+  return axios.get(`${baseUrl}/pharmacy/profile`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const updatePharmacyProfile = (formData) => {
+  return axios.post(`${baseUrl}/pharmacy/update-profile`, formData, {
+    headers: getAuthHeaders(true), // true for FormData
+  });
+};

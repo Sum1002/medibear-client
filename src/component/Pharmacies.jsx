@@ -110,21 +110,27 @@ export default function Pharmacies() {
               <div className="py-12 text-gray-500 text-center">No pharmacies available.</div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {pharmacies.map((pharmacy, i) => (
-                  <PharmacyCard
-                    key={pharmacy.id || i}
-                    img={
-                      pharmacy.image_path
-                        ? `http://localhost:8000/storage/${pharmacy.image_path}`
-                        : "/medi-Image/MediBear-Main-Logo.png"
-                    }
-                    name={pharmacy.name}
-                    address={pharmacy.address || ""}
-                    isFavorite={favoriteIds.includes(pharmacy.id)}
-                    onView={() => handleViewProducts(pharmacy.id, pharmacy.name)}
-                    onFavoriteToggle={() => handleFavoriteToggle(pharmacy.id)}
-                  />
-                ))}
+                {pharmacies.map((pharmacy, i) => {
+                  const address = pharmacy.addresses && pharmacy.addresses.length > 0
+                    ? `${pharmacy.addresses[0].address_line_1}, ${pharmacy.addresses[0].city}, ${pharmacy.addresses[0].state} ${pharmacy.addresses[0].zip_code}`
+                    : "";
+                  
+                  return (
+                    <PharmacyCard
+                      key={pharmacy.id || i}
+                      img={
+                        pharmacy.profile_picture
+                          ? `http://localhost:8000/storage/${pharmacy.profile_picture}`
+                          : "/medi-Image/MediBear-Main-Logo.png"
+                      }
+                      name={pharmacy.name}
+                      address={address}
+                      isFavorite={favoriteIds.includes(pharmacy.id)}
+                      onView={() => handleViewProducts(pharmacy.id, pharmacy.name)}
+                      onFavoriteToggle={() => handleFavoriteToggle(pharmacy.id)}
+                    />
+                  );
+                })}
               </div>
             )}
           </div>

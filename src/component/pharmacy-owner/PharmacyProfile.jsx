@@ -1,34 +1,32 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import PharmacyOwnerNav from "./PharmacyOwnerNav";
+import toast, { Toaster } from "react-hot-toast";
 import {
-  getUserDetails,
-  updateUserProfile,
+  getPharmacyProfile,
+  updatePharmacyProfile,
   createAddress,
   updateAddress,
   deleteAddress,
-  addFavoritePharmacy,
-  removeFavoritePharmacy,
-} from "../service/http";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
-import toast, { Toaster } from "react-hot-toast";
+  getUserDetails,
+  updateUserProfile,
+} from "../../service/http";
 
-export default function Profile() {
-  const navigate = useNavigate();
+export default function PharmacyProfile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
+  const [pharmacy, setPharmacy] = useState(null);
   const [addresses, setAddresses] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
-  const [showProfileForm, setShowProfileForm] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const [profileForm, setProfileForm] = useState({
     name: "",
     email: "",
     phone: "",
+    google_map_link: "",
   });
-  const [profilePicture, setProfilePicture] = useState(null);
   const [addressForm, setAddressForm] = useState({
     address_line_1: "",
     address_line_2: "",
@@ -38,29 +36,39 @@ export default function Profile() {
     country: "",
     is_default: false,
   });
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchUserDetails();
+    fetchPharmacyProfile();
   }, []);
 
-  const fetchUserDetails = async () => {
+  const fetchPharmacyProfile = async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await getUserDetails();
       const data = res.data?.data || res.data || {};
-      setUser(data.user || data);
+      setPharmacy(data.user || data);
       setAddresses(Array.isArray(data.addresses) ? data.addresses : []);
-      setFavorites(
-        Array.isArray(data.favorite_pharmacies) ? data.favorite_pharmacies : []
-      );
     } catch (err) {
-      console.error("Error fetching profile:", err);
-      setError("Failed to load profile");
+      console.error("Error fetching pharmacy profile:", err);
+      setError("Failed to load pharmacy profile");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditProfile = () => {
+    setProfileForm({
+      name: pharmacy?.name || "",
+      email: pharmacy?.email || "",
+      phone: pharmacy?.phone || "",
+      google_map_link: pharmacy?.google_map_link || "",
+    });
+    setShowEditForm(true);
+  };
+
+  const handleFormChange = (field, value) => {
+    setProfileForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleAddressFormChange = (field, value) => {
@@ -95,75 +103,6 @@ export default function Profile() {
     setShowAddressForm(true);
   };
 
-  const handleSubmitAddress = async (e) => {
-    e.preventDefault();
-    if (
-      !addressForm.address_line_1 ||
-      !addressForm.city ||
-      !addressForm.state ||
-      !addressForm.zip_code
-    ) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      if (editingAddress) {
-        await updateAddress(editingAddress.id, addressForm);
-        toast.success("Address updated");
-      } else {
-        await createAddress(addressForm);
-        toast.success("Address created");
-      }
-      resetAddressForm();
-      fetchUserDetails();
-    } catch (err) {
-      console.error("Error saving address:", err);
-      const msg = err.response?.data?.message || "Failed to save address";
-      toast.error(msg);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDeleteAddress = async (id) => {
-    if (!confirm("Delete this address?")) return;
-    try {
-      await deleteAddress(id);
-      toast.success("Address deleted");
-      fetchUserDetails();
-    } catch (err) {
-      console.error("Error deleting address:", err);
-      const msg = err.response?.data?.message || "Failed to delete address";
-      toast.error(msg);
-    }
-  };
-
-  const handleRemoveFavorite = async (pharmacyId) => {
-    try {
-      await removeFavoritePharmacy(pharmacyId);
-      toast.success("Removed from favorites");
-      fetchUserDetails();
-    } catch (err) {
-      console.error("Error removing favorite:", err);
-      const msg = err.response?.data?.message || "Failed to remove favorite";
-      toast.error(msg);
-    }
-  };
-
-  const handleEditProfile = () => {
-    setProfileForm({
-      name: user?.name || "",
-      email: user?.email || "",
-      phone: user?.phone || "",
-    });
-    setShowProfileForm(true);
-  };
-
-  const handleProfileFormChange = (field, value) => {
-    setProfileForm((prev) => ({ ...prev, [field]: value }));
-  };
-
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -189,16 +128,19 @@ export default function Profile() {
       if (profileForm.phone) {
         formData.append("phone", profileForm.phone);
       }
+      if (profileForm.google_map_link) {
+        formData.append("google_map_link", profileForm.google_map_link);
+      }
       if (profilePicture) {
         formData.append("profile_picture", profilePicture);
       }
-      
+
       await updateUserProfile(formData);
-      
+
       toast.success("Profile updated successfully");
-      setShowProfileForm(false);
+      setShowEditForm(false);
       setProfilePicture(null);
-      fetchUserDetails();
+      fetchPharmacyProfile();
     } catch (err) {
       console.error("Error updating profile:", err);
       const msg = err.response?.data?.message || "Failed to update profile";
@@ -208,13 +150,67 @@ export default function Profile() {
     }
   };
 
+  const handleSubmitAddress = async (e) => {
+    e.preventDefault();
+    if (
+      !addressForm.address_line_1 ||
+      !addressForm.city ||
+      !addressForm.state ||
+      !addressForm.zip_code
+    ) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+    
+    // Check if trying to add a second address
+    if (!editingAddress && addresses.length > 0) {
+      toast.error("Only one address is allowed. Please edit or delete the existing address.");
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      if (editingAddress) {
+        await updateAddress(editingAddress.id, addressForm);
+        toast.success("Address updated");
+      } else {
+        await createAddress(addressForm);
+        toast.success("Address created");
+      }
+      resetAddressForm();
+      fetchPharmacyProfile();
+    } catch (err) {
+      console.error("Error saving address:", err);
+      const msg = err.response?.data?.message || "Failed to save address";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteAddress = async (id) => {
+    if (!confirm("Delete this address?")) return;
+    try {
+      await deleteAddress(id);
+      toast.success("Address deleted");
+      fetchPharmacyProfile();
+    } catch (err) {
+      console.error("Error deleting address:", err);
+      const msg = err.response?.data?.message || "Failed to delete address";
+      toast.error(msg);
+    }
+  };
+
   return (
     <>
-      <Navbar />
+      <PharmacyOwnerNav />
       <Toaster position="top-right" />
 
       <div className="min-h-screen bg-gray-50">
-        <main className="max-w-7xl mx-auto px-6 py-8">
+        <main className="max-w-screen-2xl mx-auto px-6 py-8">
+          <h1 className="text-3xl font-bold text-blue-900 mb-8">
+            Pharmacy Profile
+          </h1>
 
           {error && (
             <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
@@ -224,37 +220,40 @@ export default function Profile() {
 
           {loading ? (
             <div className="text-center py-12 text-gray-500">
-              Loading profile...
+              Loading pharmacy profile...
             </div>
           ) : (
             <>
-              {/* User Info */}
+              {/* Pharmacy Info */}
               <section className="bg-white rounded-lg shadow border border-gray-100 p-6 mb-8">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-4">
                     {/* Profile Picture */}
-                    {user?.profile_picture && user.profile_picture.trim() !== '' ? (
+                    {pharmacy?.profile_picture &&
+                    pharmacy.profile_picture.trim() !== "" ? (
                       <img
-                        src={`http://localhost:8000/storage/${user.profile_picture}`}
-                        alt={user?.name}
+                        src={`http://localhost:8000/storage/${pharmacy.profile_picture}`}
+                        alt={pharmacy?.name}
                         className="w-16 h-16 rounded-full object-cover border-2 border-blue-100"
                         onError={(e) => {
-                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.style.display = "none";
                           const parent = e.currentTarget.parentElement;
-                          const fallback = document.createElement('div');
-                          fallback.className = 'w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600';
-                          fallback.textContent = user?.name?.charAt(0).toUpperCase() || 'U';
+                          const fallback = document.createElement("div");
+                          fallback.className =
+                            "w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600";
+                          fallback.textContent =
+                            pharmacy?.name?.charAt(0).toUpperCase() || "P";
                           parent.appendChild(fallback);
                         }}
                       />
                     ) : (
                       <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600">
-                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                        {pharmacy?.name?.charAt(0).toUpperCase() || "P"}
                       </div>
                     )}
                     <div>
                       <h2 className="text-2xl font-semibold text-gray-900">
-                        {user?.name}
+                        {pharmacy?.name}
                       </h2>
                     </div>
                   </div>
@@ -262,7 +261,12 @@ export default function Profile() {
                     onClick={handleEditProfile}
                     className="px-4 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700 flex items-center gap-2"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
                       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                     Edit Profile
@@ -270,8 +274,11 @@ export default function Profile() {
                 </div>
 
                 {/* Profile Edit Form */}
-                {showProfileForm && (
-                  <form onSubmit={handleSubmitProfile} className="bg-gray-50 rounded p-4 mb-6">
+                {showEditForm && (
+                  <form
+                    onSubmit={handleSubmitProfile}
+                    className="bg-gray-50 rounded p-4 mb-6"
+                  >
                     <h3 className="text-lg font-semibold mb-4">Edit Profile</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
@@ -281,7 +288,9 @@ export default function Profile() {
                         <input
                           type="text"
                           value={profileForm.name}
-                          onChange={(e) => handleProfileFormChange("name", e.target.value)}
+                          onChange={(e) =>
+                            handleFormChange("name", e.target.value)
+                          }
                           className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                           required
                         />
@@ -293,7 +302,9 @@ export default function Profile() {
                         <input
                           type="email"
                           value={profileForm.email}
-                          onChange={(e) => handleProfileFormChange("email", e.target.value)}
+                          onChange={(e) =>
+                            handleFormChange("email", e.target.value)
+                          }
                           className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                           required
                         />
@@ -305,8 +316,24 @@ export default function Profile() {
                         <input
                           type="text"
                           value={profileForm.phone}
-                          onChange={(e) => handleProfileFormChange("phone", e.target.value)}
+                          onChange={(e) =>
+                            handleFormChange("phone", e.target.value)
+                          }
                           className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Google Map Link
+                        </label>
+                        <input
+                          type="url"
+                          value={profileForm.google_map_link}
+                          onChange={(e) =>
+                            handleFormChange("google_map_link", e.target.value)
+                          }
+                          className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                          placeholder="https://maps.google.com/..."
                         />
                       </div>
                       <div>
@@ -320,7 +347,9 @@ export default function Profile() {
                           className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                         />
                         {profilePicture && (
-                          <p className="text-xs text-gray-600 mt-1">Selected: {profilePicture.name}</p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            Selected: {profilePicture.name}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -329,7 +358,9 @@ export default function Profile() {
                         type="submit"
                         disabled={submitting}
                         className={`px-4 py-2 rounded text-sm text-white ${
-                          submitting ? "bg-blue-300" : "bg-blue-600 hover:bg-blue-700"
+                          submitting
+                            ? "bg-blue-300"
+                            : "bg-blue-600 hover:bg-blue-700"
                         }`}
                       >
                         {submitting ? "Saving..." : "Save Changes"}
@@ -337,7 +368,7 @@ export default function Profile() {
                       <button
                         type="button"
                         onClick={() => {
-                          setShowProfileForm(false);
+                          setShowEditForm(false);
                           setProfilePicture(null);
                         }}
                         className="px-4 py-2 rounded border text-sm"
@@ -352,30 +383,67 @@ export default function Profile() {
                   <div>
                     <p className="text-sm text-gray-500">Email</p>
                     <p className="font-medium text-gray-900">
-                      {user?.email || "—"}
+                      {pharmacy?.email || "—"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Phone</p>
                     <p className="font-medium text-gray-900">
-                      {user?.phone || "—"}
+                      {pharmacy?.phone || "—"}
                     </p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <p className="text-sm text-gray-500">Google Map Link</p>
+                    {pharmacy?.google_map_link ? (
+                      <a
+                        href={pharmacy.google_map_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        View on Google Maps
+                      </a>
+                    ) : (
+                      <p className="font-medium text-gray-900">—</p>
+                    )}
                   </div>
                 </div>
               </section>
 
-              {/* Addresses Section */}
+              {/* Address Section */}
               <section className="bg-white rounded-lg shadow border border-gray-100 p-6 mb-8">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-blue-900">
-                    My Addresses
+                    Pharmacy Address
                   </h2>
-                  <button
-                    onClick={() => setShowAddressForm((v) => !v)}
-                    className="px-4 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
-                  >
-                    {showAddressForm ? "Cancel" : "Add Address"}
-                  </button>
+                  {addresses.length === 0 && !showAddressForm && (
+                    <button
+                      onClick={() => setShowAddressForm(true)}
+                      className="px-4 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
+                    >
+                      Add Address
+                    </button>
+                  )}
+                  {showAddressForm && (
+                    <button
+                      onClick={() => setShowAddressForm(false)}
+                      className="px-4 py-2 rounded border text-sm"
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
 
                 {/* Address Form */}
@@ -519,127 +587,48 @@ export default function Profile() {
                   </form>
                 )}
 
-                {/* Address List */}
-                {addresses.length === 0 ? (
-                  <p className="text-sm text-gray-500">No addresses yet.</p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {addresses.map((addr) => (
-                      <div
-                        key={addr.id}
-                        className={`border rounded-lg p-4 ${
-                          addr.is_default
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-gray-200"
-                        }`}
+                {/* Address Display */}
+                {addresses.length === 0 && !showAddressForm ? (
+                  <p className="text-sm text-gray-500">No address yet.</p>
+                ) : addresses.length > 0 && !showAddressForm ? (
+                  <div className="border rounded-lg p-4 border-gray-200">
+                    <p className="font-medium text-gray-900">
+                      {addresses[0].address_line_1}
+                    </p>
+                    {addresses[0].address_line_2 && (
+                      <p className="text-sm text-gray-600">
+                        {addresses[0].address_line_2}
+                      </p>
+                    )}
+                    <p className="text-sm text-gray-600">
+                      {addresses[0].city}, {addresses[0].state} {addresses[0].zip_code}
+                    </p>
+                    {addresses[0].country && (
+                      <p className="text-sm text-gray-600">
+                        {addresses[0].country}
+                      </p>
+                    )}
+                    <div className="flex gap-2 mt-3">
+                      <button
+                        onClick={() => handleEditAddress(addresses[0])}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                       >
-                        {addr.is_default && (
-                          <span className="inline-block px-2 py-1 rounded bg-blue-600 text-white text-xs font-semibold mb-2">
-                            Default
-                          </span>
-                        )}
-                        <p className="font-medium text-gray-900">
-                          {addr.address_line_1}
-                        </p>
-                        {addr.address_line_2 && (
-                          <p className="text-sm text-gray-600">
-                            {addr.address_line_2}
-                          </p>
-                        )}
-                        <p className="text-sm text-gray-600">
-                          {addr.city}, {addr.state} {addr.zip_code}
-                        </p>
-                        {addr.country && (
-                          <p className="text-sm text-gray-600">
-                            {addr.country}
-                          </p>
-                        )}
-                        <div className="flex gap-2 mt-3">
-                          <button
-                            onClick={() => handleEditAddress(addr)}
-                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteAddress(addr.id)}
-                            className="text-red-600 hover:text-red-800 text-sm font-medium"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-
-              {/* Favorite Pharmacies */}
-              <section className="bg-white rounded-lg shadow border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-blue-900 mb-6">
-                  Favorite Pharmacies
-                </h2>
-                {favorites.length === 0 ? (
-                  <p className="text-sm text-gray-500">
-                    No favorite pharmacies yet.
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {favorites.map((fav) => (
-                      <div
-                        key={fav.id || fav.pharmacy_id}
-                        onClick={() =>
-                          navigate(
-                            `/products?pharmacyId=${fav.id || fav.pharmacy_id}&pharmacyName=${encodeURIComponent(fav.name || "Pharmacy")}`
-                          )
-                        }
-                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition cursor-pointer"
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteAddress(addresses[0].id)}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="font-semibold text-gray-900">
-                              {fav.name || "Pharmacy"}
-                            </p>
-                            {fav.phone && (
-                              <p className="text-sm text-gray-600 mt-1">
-                                {fav.phone}
-                              </p>
-                            )}
-                            {fav.email && (
-                              <p className="text-sm text-gray-500 mt-1">
-                                {fav.email}
-                              </p>
-                            )}
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFavorite(fav.id || fav.pharmacy_id);
-                            }}
-                            className="text-red-600 hover:text-red-800"
-                            aria-label="Remove favorite"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                            >
-                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                        Delete
+                      </button>
+                    </div>
                   </div>
-                )}
+                ) : null}
               </section>
             </>
           )}
         </main>
       </div>
-
-      <Footer />
     </>
   );
 }
