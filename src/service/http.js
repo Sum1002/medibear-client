@@ -165,13 +165,7 @@ export const getUserDetails = () => {
   });
 };
 
-export const updateUserProfile = (profileData) => {
-  return axios.put(`${baseUrl}/user/details`, profileData, {
-    headers: getAuthHeaders(),
-  });
-};
-
-export const uploadProfilePicture = (formData) => {
+export const updateUserProfile = (formData) => {
   return axios.post(`${baseUrl}/user/update-profile`, formData, {
     headers: getAuthHeaders(true), // true for FormData
   });

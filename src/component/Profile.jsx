@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import {
   getUserDetails,
   updateUserProfile,
-  uploadProfilePicture,
   createAddress,
   updateAddress,
   deleteAddress,
@@ -184,20 +183,17 @@ export default function Profile() {
     }
     setSubmitting(true);
     try {
-      // Combine profile data and picture in FormData
       const formData = new FormData();
       formData.append("name", profileForm.name);
       formData.append("email", profileForm.email);
       if (profileForm.phone) {
         formData.append("phone", profileForm.phone);
       }
-      
-      // Add profile picture if selected
       if (profilePicture) {
         formData.append("profile_picture", profilePicture);
       }
       
-      await uploadProfilePicture(formData);
+      await updateUserProfile(formData);
       
       toast.success("Profile updated successfully");
       setShowProfileForm(false);
@@ -236,24 +232,26 @@ export default function Profile() {
               <section className="bg-white rounded-lg shadow border border-gray-100 p-6 mb-8">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-4">
-                    <div className="relative">
-                      {user?.profile_picture ? (
-                        <img
-                          src={`http://localhost:8000/storage/${user.profile_picture}`}
-                          alt={user?.name}
-                          className="w-16 h-16 rounded-full object-cover border-2 border-blue-100"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextSibling.style.display = 'flex';
-                          }}
-                        />
-                      ) : null}
-                      <div 
-                        className={`w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600 ${user?.profile_picture ? 'hidden' : ''}`}
-                      >
-                        {user?.name?.charAt(0).toUpperCase()}
+                    {/* Profile Picture */}
+                    {user?.profile_picture && user.profile_picture.trim() !== '' ? (
+                      <img
+                        src={`http://localhost:8000/storage/${user.profile_picture}`}
+                        alt={user?.name}
+                        className="w-16 h-16 rounded-full object-cover border-2 border-blue-100"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          const fallback = document.createElement('div');
+                          fallback.className = 'w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600';
+                          fallback.textContent = user?.name?.charAt(0).toUpperCase() || 'U';
+                          parent.appendChild(fallback);
+                        }}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600">
+                        {user?.name?.charAt(0).toUpperCase() || 'U'}
                       </div>
-                    </div>
+                    )}
                     <div>
                       <h2 className="text-2xl font-semibold text-gray-900">
                         {user?.name}
@@ -350,6 +348,7 @@ export default function Profile() {
                     </div>
                   </form>
                 )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Email</p>
