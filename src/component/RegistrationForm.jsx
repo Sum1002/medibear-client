@@ -25,6 +25,9 @@ export default function RegistrationForm() {
     try {
       const resp = await registerUser(payload);
       toast.success('Registration successful!');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
     } catch (error) {
       toast.error('Registration failed. Please try again.');
     }

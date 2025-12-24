@@ -15,7 +15,7 @@ export default function PharmacyCard({
           <img
             src={img}
             alt={name}
-            className="card-image w-32 h-32 object-contain mx-auto mb-2"
+            className="card-image w-full h-48 object-cover rounded-t-xl mb-2"
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = "/medi-Image/MediBear-Main-Logo.png";

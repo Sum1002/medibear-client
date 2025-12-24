@@ -13,6 +13,7 @@ export default function ProductPage() {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const pharmacyId = searchParams.get("pharmacyId");
   const pharmacyName = searchParams.get("pharmacyName");
@@ -128,6 +129,17 @@ export default function ProductPage() {
               <h1 className="text-2xl font-bold mb-8 text-gray-800 text-center">All Products</h1>
             )}
 
+            {/* Search bar */}
+            <div className="mb-6 max-w-md mx-auto">
+              <input
+                type="text"
+                placeholder="Search by product name or pharmacy name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
             {error && (
               <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-center">
                 {error}
@@ -140,7 +152,12 @@ export default function ProductPage() {
               <div className="py-12 text-gray-500 text-center">No products available.</div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {products.map((product, i) => (
+                {products.filter(product => {
+                  const productName = product.name?.toLowerCase() || "";
+                  const pharmacyName = product.user?.name?.toLowerCase() || "";
+                  const query = searchQuery.toLowerCase();
+                  return productName.includes(query) || pharmacyName.includes(query);
+                }).map((product, i) => (
                   <ProductCard
                     key={product.id || i}
                     img={

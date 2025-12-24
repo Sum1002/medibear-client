@@ -12,7 +12,7 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("logged_in_user");
     localStorage.removeItem("auth_token");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   const updateCartCount = () => {

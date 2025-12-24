@@ -10,9 +10,9 @@ import ProductCard from "./ProductCard";
 
 export default function UserHomeView() {
   const categories = [
-    { img: '/medi-Image/Vaccin.png', name: 'Vaccines' },
+    { img: '/medi-Image/vac.png', name: 'Vaccines' },
     { img: '/medi-Image/inh.png', name: 'Inhalers' },
-    { img: '/medi-Image/injection.png', name: 'Injections' },
+    { img: '/medi-Image/injection.png', name: 'Injections' , className: "w-full" },
     { img: '/medi-Image/image.png', name: 'Analgesics' },
     { img: '/medi-Image/Anti.png', name: 'Antibiotics' },
     { img: '/medi-Image/supli.png', name: 'Supplements' },

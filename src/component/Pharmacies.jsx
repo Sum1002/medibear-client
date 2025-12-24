@@ -14,6 +14,7 @@ export default function Pharmacies() {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const limit = 20;
 
@@ -97,6 +98,17 @@ export default function Pharmacies() {
         <div className="max-w-screen-2xl mx-auto px-6 w-full">
           <div className="mt-12 mb-12">
             <h1 className="text-2xl font-bold mb-8 text-gray-800 text-center">Pharmacies</h1>
+            
+            {/* Search bar */}
+            <div className="mb-6 max-w-md mx-auto">
+              <input
+                type="text"
+                placeholder="Search pharmacies by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
             {error && (
               <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-center">
@@ -110,7 +122,9 @@ export default function Pharmacies() {
               <div className="py-12 text-gray-500 text-center">No pharmacies available.</div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {pharmacies.map((pharmacy, i) => {
+                {pharmacies.filter(pharmacy => 
+                  pharmacy.name.toLowerCase().includes(searchQuery.toLowerCase())
+                ).map((pharmacy, i) => {
                   const address = pharmacy.addresses && pharmacy.addresses.length > 0
                     ? `${pharmacy.addresses[0].address_line_1}, ${pharmacy.addresses[0].city}, ${pharmacy.addresses[0].state} ${pharmacy.addresses[0].zip_code}`
                     : "";
