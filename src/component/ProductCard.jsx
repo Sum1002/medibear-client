@@ -9,15 +9,16 @@ export default function ProductCard({
 }) {
   return (
     <div className="cardsection w-full">
-      <div className="card w-full bg-white border border-gray-300 rounded-xl p-1 hover:shadow-lg transform hover:-translate-y-1 transition">
+      <div className="card w-full bg-white border border-gray-200 rounded-xl p-1 shadow-md hover:shadow-xl transform hover:-translate-y-1 transition">
         <img
           src={img}
           alt={productName}
-          className="card-image w-32 h-32 object-contain mx-auto mb-2"
+          className="card-image w-66 h-32 object-contain transform transition duration-300
+  hover:scale-105 hover:shadow-lg mx-auto mb-2"
           onError={(e) => {
             // fallback to main logo if image missing
             e.currentTarget.onerror = null;
-            e.currentTarget.src = '/medi-Image/MediBear-Main-Logo.png';
+            e.currentTarget.src = "/medi-Image/MediBear-Main-Logo.png";
           }}
         />
         <div className=" text-left p-3">

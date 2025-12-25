@@ -1,6 +1,6 @@
 export default function Footer() {
     return (
-        <footer className="bg-gradient-to-bl from-blue-900 to-blue-600 text-white mt-12">
+        <footer className="bg-gradient-to-bl from-blue-900 to-blue-600 text-white ">
     <div className="max-w-screen-2xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
       <div className="md:pr-6">
         {/* Logo without white box */}

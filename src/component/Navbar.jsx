@@ -64,36 +64,40 @@ export default function Navbar() {
               Products
             </a>
           </li>
-          <li>
-            <a href="/my-orders" className="hover:text-blue-700">
-              My Orders
-            </a>
-          </li>
+          {getLoggedInUser() && (
+            <li>
+              <a href="/my-orders" className="hover:text-blue-700">
+                My Orders
+              </a>
+            </li>
+          )}
         </ul>
         <div className="flex items-center gap-4">
-          <a
-            href="/checkout"
-            className="relative text-gray-700 hover:text-blue-700"
-            aria-label="Cart"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          {getLoggedInUser() && (
+            <a
+              href="/checkout"
+              className="relative text-gray-700 hover:text-blue-700"
+              aria-label="Cart"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 7h14l-2-7M10 21a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z"
-              />
-            </svg>
-            <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-medium leading-none text-white bg-red-600 rounded-full">
-              {cartCount}
-            </span>
-          </a>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 7h14l-2-7M10 21a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z"
+                />
+              </svg>
+              <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-medium leading-none text-white bg-red-600 rounded-full">
+                {cartCount}
+              </span>
+            </a>
+          )}
           {getLoggedInUser() ? (
             <>
               <a href="/profile" className="text-blue-700 hover:text-blue-900 font-medium hover:underline">
