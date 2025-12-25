@@ -7,6 +7,7 @@ export default function Cart() {
   const [cart, setCart] = useState([]);
 
   const [payment, setPayment] = useState('cod');
+  const [prescriptionFile, setPrescriptionFile] = useState(null);
 
   const delivery = 50.0;
 
@@ -94,19 +95,24 @@ export default function Cart() {
       return;
     }
 
-    const payload = {
-      pharmacy_id: pharmacyId,
-      payment_type: payment,
-      items: cart.map((item) => ({
-        product_id: item.id,
-        quantity: item.quantity || 1,
-      })),
-    };
+    const formData = new FormData();
+    formData.append('pharmacy_id', pharmacyId);
+    formData.append('payment_type', payment);
+    
+    // Append items array properly for FormData
+    cart.forEach((item, index) => {
+      formData.append(`items[${index}][product_id]`, item.id);
+      formData.append(`items[${index}][quantity]`, item.quantity || 1);
+    });
+    
+    if (prescriptionFile) {
+      formData.append('prescription', prescriptionFile);
+    }
 
     (async () => {
       try {
-        console.log('Sending order payload:', payload);
-        const response = await createOrder(payload);
+        console.log('Sending order with prescription');
+        const response = await createOrder(formData);
         console.log('Order response:', response);
         toast.success('Order placed successfully!');
         setCart([]);
@@ -197,6 +203,31 @@ export default function Cart() {
 
         <aside className="bg-white rounded-lg shadow p-4">
           <h2 className="text-lg font-medium mb-3">Payment & Summary</h2>
+          
+          {/* Prescription Upload */}
+          <div className="mb-4 pb-4 border-b">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Prescription (Optional)</label>
+            <div className="flex flex-col gap-2">
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => setPrescriptionFile(e.target.files[0])}
+                className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {prescriptionFile && (
+                <div className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                  <span className="text-sm text-gray-600 truncate">{prescriptionFile.name}</span>
+                  <button
+                    onClick={() => setPrescriptionFile(null)}
+                    className="text-red-600 text-sm font-medium ml-2"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="mb-4">
             <label className="block text-sm muted mb-2">Payment method</label>
             <div className="flex flex-col gap-2">

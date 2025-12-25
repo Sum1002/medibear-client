@@ -103,12 +103,7 @@ export default function Navbar() {
               <a href="/profile" className="text-blue-700 hover:text-blue-900 font-medium hover:underline">
                 Hello, {getLoggedInUser().name}
               </a>
-              <button
-                onClick={handleLogout}
-                className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
-              >
-                Logout
-              </button>
+              <Button onClick={handleLogout} buttonText="Logout" />
             </>
           ) : (
             <a href="/login">
