@@ -3,6 +3,27 @@ import axios from "axios";
 // Use relative base URL; Vite proxy will forward to backend
 const baseUrl = "http://localhost:8000/api";
 
+// Global response interceptor: if any request returns 401/403, log out and redirect to login
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    if (status === 401 || status === 403) {
+      try {
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("logged_in_user");
+      } catch (e) {
+        // ignore
+      }
+      // Redirect to login page
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 const getAuthHeaders = (isFormData = false) => {
   const authToken = localStorage.getItem("auth_token");
   
@@ -286,8 +307,9 @@ export const updateUserStatus = (userId, status) => {
   );
 };
 
-export const getAllUsers = () => {
+export const getAllUsers = (params = {}) => {
   return axios.get(`${baseUrl}/admin/users`, {
+    params,
     headers: getAuthHeaders(),
   });
 };
