@@ -11,7 +11,7 @@ export default function PopularCategoryCard({
         onClick={onClick}
         tabIndex={onClick ? 0 : undefined}
         className="bg-rose-50 rounded-xl shadow-sm hover:shadow-md transform transition duration-300
-  hover:scale-105 hover:shadow-lg transform hover:-translate-y-1 transition p-4 flex flex-col items-center text-center overflow-hidden cursor-pointer"
+  hover:scale-105 hover:-translate-y-1 p-4 flex flex-col items-center text-center overflow-hidden cursor-pointer"
         onKeyDown={(e) => {
           if (onClick && (e.key === "Enter" || e.key === " ")) onClick(e);
         }}

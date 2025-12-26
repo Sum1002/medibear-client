@@ -178,7 +178,7 @@ export default function UserHomeView() {
       {/* Main Content Container with Alignment */}
       <div className="max-w-screen-2xl mx-auto px-6">
         {/* Popular categories: 6 small cards */}
-        <div className="mt-12 mb-12 bg-gradient-to-r from-white via-green-200 to-white">
+        <div className="mt-12 mb-12 bg-linear-to-r from-white via-green-200 to-white">
           <h2 className="text-2xl font-bold mb-8 text-gray-800 text-center">Popular Categories</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8 justify-items-stretch">
             {categories.map((c, idx) => (
@@ -191,7 +191,7 @@ export default function UserHomeView() {
 
         {/* Popular products */}
         <h2 className="text-2xl font-bold text-gray-800 text-center">Popular Products</h2>
-        <div className="mt-8 bg-gradient-to-r from-white via-purple-200 to-white pt-4 pb-2">
+        <div className="mt-8 bg-linear-to-r from-white via-purple-200 to-white pt-4 pb-2">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6 justify-items-stretch">
             { popularProducts.slice(0, 10).map((product, i) => (
                 <ProductCard

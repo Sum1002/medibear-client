@@ -23,6 +23,12 @@ import ProductPage from './component/ProductPage.jsx';
 import Pharmacies from './component/Pharmacies.jsx';
 import MyOrders from './component/MyOrders.jsx';
 import Profile from './component/Profile.jsx';
+import AdminDashboard from './component/super-admin/AdminDashboard.jsx';
+import Verification from './component/super-admin/Verification.jsx';
+import UserManagement from './component/super-admin/UserManagement.jsx';
+import Complain from './component/super-admin/Complain.jsx';
+import OrderManagment from './component/super-admin/OrderManagment.jsx';
+import Support from './component/Support.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -48,6 +54,12 @@ createRoot(document.getElementById('root')).render(
       <Route path="/checkout" element={<Cart />} />
       <Route path="/my-orders" element={<MyOrders />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/verification" element={<Verification />} />
+      <Route path="/admin/users" element={<UserManagement />} />
+      <Route path="/admin/user-complaints" element={<Complain />} />
+      <Route path="/admin/orders" element={<OrderManagment />} />
+      <Route path="/support" element={<Support />} />
       </Routes>
   </BrowserRouter>,
 )

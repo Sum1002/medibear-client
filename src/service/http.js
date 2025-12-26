@@ -220,3 +220,74 @@ export const updatePharmacyProfile = (formData) => {
     headers: getAuthHeaders(true), // true for FormData
   });
 };
+
+// Admin APIs
+export const getPendingPharmacies = () => {
+  return axios.get(`${baseUrl}/admin/pharmacies/pending`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const approvePharmacy = (pharmacyId) => {
+  return axios.post(`${baseUrl}/admin/pharmacies/${pharmacyId}/approve`, {}, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const rejectPharmacy = (pharmacyId) => {
+  return axios.post(`${baseUrl}/admin/pharmacies/${pharmacyId}/reject`, {}, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const getAllOrders = () => {
+  return axios.get(`${baseUrl}/admin/orders`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const getUserComplaints = () => {
+  return axios.get(`${baseUrl}/admin/user-complaints`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+// User complaint (public)
+export const postUserComplaint = (payload) => {
+  return axios.post(`${baseUrl}/user-complaints`, payload, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const getMyComplaints = () => {
+  return axios.get(`${baseUrl}/user-complaints`, {
+    headers: getAuthHeaders(),
+  });
+};
+
+export const respondToComplaint = (complaintId, payload) => {
+  // payload should be an object like { status, admin_response }
+  return axios.post(
+    `${baseUrl}/admin/user-complaints/${complaintId}/respond`,
+    payload,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
+};
+
+export const updateUserStatus = (userId, status) => {
+  return axios.post(
+    `${baseUrl}/admin/users/${userId}/status`,
+    { status },
+    {
+      headers: getAuthHeaders(),
+    }
+  );
+};
+
+export const getAllUsers = () => {
+  return axios.get(`${baseUrl}/admin/users`, {
+    headers: getAuthHeaders(),
+  });
+};

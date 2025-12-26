@@ -1,6 +1,6 @@
 export default function Footer() {
     return (
-        <footer className="bg-gradient-to-bl from-blue-900 to-blue-600 text-white ">
+        <footer className="bg-linear-to-bl from-blue-900 to-blue-600 text-white ">
     <div className="max-w-screen-2xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
       <div className="md:pr-6">
         {/* Logo without white box */}
@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="ml-8 md:ml-12">
           <h4 className="text-white font-semibold mb-3">Support</h4>
           <ul className="text-gray-300 text-sm space-y-2">
-            <li><a href="#" className="hover:underline">Help Center</a></li>
+            <li><a href="/support" className="hover:underline">Help Center</a></li>
             <li><a href="#" className="hover:underline">Shipping</a></li>
             <li><a href="#" className="hover:underline">Returns</a></li>
           </ul>

@@ -9,13 +9,13 @@ export default function PharmacyCard({
   onFavoriteToggle,
 }) {
   return (
-    <div className="cardsection p-1 bg-white">
+    <div className="cardsection  bg-white">
       <div className="card w-60 bg-white border border-gray-300 rounded-xl p-1 hover:shadow-lg transform hover:-translate-y-1 transition">
         <div className="relative">
           <img
             src={img}
             alt={name}
-            className="card-image w-full h-48 object-cover rounded-t-xl mb-2"
+            className="card-image w-full h-52 object-cover rounded-t-xl mb-2"
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = "/medi-Image/MediBear-Main-Logo.png";

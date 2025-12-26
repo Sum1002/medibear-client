@@ -1,6 +1,6 @@
 export default function HeroSection() {
     return (
-        <section className="relative w-full bg-gradient-to-r from-blue-950 to-blue-700 text-white overflow-hidden">
+        <section className="relative w-full bg-linear-to-r from-blue-950 to-blue-700 text-white overflow-hidden">
   <div className="flex flex-col md:flex-row w-full">
 
     {/* LEFT: Text Content */}
@@ -41,7 +41,7 @@ export default function HeroSection() {
       />
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-950/50 to-transparent"></div>
+      <div className="absolute inset-0 bg-linear-to-r from-blue-950/50 to-transparent"></div>
     </div>
 
   </div>

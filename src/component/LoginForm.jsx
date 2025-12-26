@@ -18,7 +18,13 @@ export default function LoginForm() {
       localStorage.setItem('auth_token', resp.data.access_token);
       localStorage.setItem('logged_in_user', JSON.stringify(resp.data.user));
       toast.success('Login successful!');
-      location.href = '/';
+      // Redirect based on role
+      const role = resp.data.user?.register_as || resp.data.user?.role;
+      if (role === 'admin' || role === 'administrator') {
+        location.href = '/admin/dashboard';
+      } else {
+        location.href = '/';
+      }
     } catch (error) {
       toast.error('Login failed. Please check your credentials and try again.');
     }
