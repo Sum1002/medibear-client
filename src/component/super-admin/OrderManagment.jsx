@@ -84,124 +84,79 @@ const OrderManagment = () => {
   };
 
   return (
-    <div className="bg-linear-to-r from-blue-50 to-white font-sans min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-white font-sans">
       <Toaster position="top-right" />
-
-      <div className="max-w-5xl mx-auto p-8 grow flex flex-col">
-        <header className="flex items-center justify-between mb-10">
-          <h1 className="text-4xl font-extrabold text-blue-900 drop-shadow-md">
-            Orders Management
-          </h1>
+      <div className="max-w-7xl mx-auto p-8">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-blue-900">Order Management</h1>
           <button
-            onClick={() => navigate("/admin/dashboard")}
-            className="bg-linear-to-r from-blue-950 to-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg px-6 py-3 shadow-lg transition duration-300"
+            onClick={() => navigate('/admin/dashboard')}
+            className="bg-blue-700 text-white px-4 py-2 rounded-lg shadow"
           >
             Back to Dashboard
           </button>
-        </header>
+        </div>
 
-        <section className="bg-white rounded-3xl shadow-2xl p-8 flex flex-col overflow-auto">
-          <p className="mb-8 text-gray-700 text-lg tracking-wide">
-            Manage all customer orders and update their statuses.
-          </p>
+        <div className="bg-white rounded-lg shadow p-4">
 
-          {loading ? (
-            <div className="text-center py-12 text-gray-500">Loading...</div>
-          ) : orders.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              No orders found.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse border border-gray-300 shadow-md rounded-lg overflow-hidden">
-                <thead className="bg-linear-to-r from-blue-400 to-blue-600 text-white text-lg">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Order ID</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Customer</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Pharmacy</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Total</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Status</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Order Date</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {loading ? (
                   <tr>
-                    <th className="border border-blue-600 px-6 py-4 text-left">
-                      Order ID
-                    </th>
-                    <th className="border border-blue-600 px-6 py-4 text-left">
-                      Customer
-                    </th>
-                    <th className="border border-blue-600 px-6 py-4 text-left">
-                      Pharmacy
-                    </th>
-                    <th className="border border-blue-600 px-6 py-4 text-left">
-                      Total
-                    </th>
-                    <th className="border border-blue-600 px-6 py-4 text-left">
-                      Status
-                    </th>
-                    <th className="border border-blue-600 px-6 py-4 text-left">
-                      Order Date
-                    </th>
-                    <th className="border border-blue-600 px-6 py-4 text-left">
-                      Actions
-                    </th>
+                    <td colSpan={7} className="px-4 py-6 text-center text-gray-500">Loading...</td>
                   </tr>
-                </thead>
-                <tbody className="text-gray-900 font-semibold">
-                  {orders.map((order) => (
-                    <tr key={order.id} className="hover:bg-blue-50 transition">
-                      <td className="border border-gray-300 px-6 py-4">
-                        #{order.id}
+                ) : orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-6 text-center text-gray-500">No orders found.</td>
+                  </tr>
+                ) : (
+                  orders.map((order) => (
+                    <tr key={order.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-700">#{order.id}</td>
+                      <td className="px-4 py-3">
+                        <div className="text-sm font-medium text-gray-900">{order.user?.name || '—'}</div>
+                        <div className="text-xs text-gray-500">{order.user?.email || 'N/A'}</div>
                       </td>
-                      <td className="border border-gray-300 px-6 py-4">
-                        {order.user?.name || "N/A"}
+                      <td className="px-4 py-3 text-sm text-gray-700">{order.pharmacy?.name || 'N/A'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">৳ {parseFloat(order.total_price).toFixed(2)}</td>
+                      <td className="px-4 py-3 text-sm">
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}>
+                          {order.status}
+                        </span>
                       </td>
-                      <td className="border border-gray-300 px-6 py-4">
-                        {order.pharmacy?.name || "N/A"}
-                      </td>
-                      <td className="border border-gray-300 px-6 py-4">
-                        ৳ {parseFloat(order.total_price).toFixed(2)}
-                      </td>
-                      <td
-                        className={`border border-gray-300 px-6 py-4 ${getStatusColor(
-                          order.status
-                        )}`}
-                      >
-                        {order.status}
-                      </td>
-                      <td className="border border-gray-300 px-6 py-4">
-                        {formatDate(order.created_at)}
-                      </td>
-                      <td className="border border-gray-300 px-6 py-4 space-x-2">
+                      <td className="px-4 py-3 text-sm text-gray-600">{formatDate(order.created_at)}</td>
+                      <td className="px-4 py-3 text-right">
                         <button
                           onClick={() => handleViewDetails(order)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full shadow-md transition text-sm"
+                          className="text-sm bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
                         >
                           Details
                         </button>
-                        {order.status !== "completed" &&
-                          order.status !== "cancelled" && (
-                            <button
-                              onClick={() =>
-                                handleStatusChange(order.id, "completed")
-                              }
-                              disabled={processing === order.id}
-                              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full shadow-md transition text-sm disabled:opacity-50"
-                            >
-                              Approve
-                            </button>
-                          )}
-                        {order.status !== "cancelled" && (
-                          <button
-                            onClick={() =>
-                              handleStatusChange(order.id, "cancelled")
-                            }
-                            disabled={processing === order.id}
-                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full shadow-md transition text-sm disabled:opacity-50"
-                          >
-                            Cancel
-                          </button>
-                        )}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* Order Details Drawer */}
