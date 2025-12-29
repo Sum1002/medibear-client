@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Navbar from './Navbar';
 import toast, { Toaster } from 'react-hot-toast';
-import { createOrder } from '../service/http';
+import { createOrder, getUserDetails } from '../service/http';
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
 
   const [payment, setPayment] = useState('cod');
   const [prescriptionFile, setPrescriptionFile] = useState(null);
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  const [loadingAddress, setLoadingAddress] = useState(false);
 
   const delivery = 50.0;
 
@@ -31,6 +33,26 @@ export default function Cart() {
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
+
+  useEffect(() => {
+    fetchDefaultAddress();
+  }, []);
+
+  const fetchDefaultAddress = async () => {
+    setLoadingAddress(true);
+    try {
+      const res = await getUserDetails();
+      const data = res.data?.data || res.data || {};
+      const addresses = Array.isArray(data.addresses) ? data.addresses : [];
+      const defaultAddr = addresses.find(addr => addr.is_default);
+      setDefaultAddress(defaultAddr || null);
+    } catch (err) {
+      console.error('Error fetching default address:', err);
+      setDefaultAddress(null);
+    } finally {
+      setLoadingAddress(false);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -226,6 +248,41 @@ export default function Cart() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Default Address Display */}
+          <div className="mb-4 pb-4 border-b">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Address</label>
+            {loadingAddress ? (
+              <p className="text-sm text-gray-500">Loading address...</p>
+            ) : defaultAddress ? (
+              <div className="bg-gray-50 p-3 rounded">
+                <p className="text-sm font-medium text-gray-800">
+                  {defaultAddress.address_line_1}
+                  {defaultAddress.address_line_2 ? `, ${defaultAddress.address_line_2}` : ''}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {defaultAddress.city}{defaultAddress.state ? `, ${defaultAddress.state}` : ''} {defaultAddress.zip_code}
+                </p>
+                <p className="text-sm text-gray-600">{defaultAddress.country}</p>
+                <button
+                  onClick={() => window.location.href = '/profile'}
+                  className="text-xs text-blue-600 hover:underline mt-1"
+                >
+                  Change address
+                </button>
+              </div>
+            ) : (
+              <div className="bg-yellow-50 p-3 rounded">
+                <p className="text-sm text-gray-700">No default address set</p>
+                <button
+                  onClick={() => window.location.href = '/profile'}
+                  className="text-xs text-blue-600 hover:underline mt-1"
+                >
+                  Add address in profile
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="mb-4">

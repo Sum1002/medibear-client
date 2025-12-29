@@ -1,9 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
 import PharmacyOwnerNav from "./PharmacyOwnerNav";
 import Summary from "./Summary";
+import { getOrdersByPharmacy } from "../../service/http";
 
 const PharmacyDashboard = () => {
+  const [complaintsCount, setComplaintsCount] = useState(0);
+  const [ordersWithComplaints, setOrdersWithComplaints] = useState([]);
+
+  useEffect(() => {
+    fetchComplaintsCount();
+  }, []);
+
+  const fetchComplaintsCount = async () => {
+    try {
+      const res = await getOrdersByPharmacy();
+      const orders = Array.isArray(res.data.data) ? res.data.data : [];
+      // Filter orders that have complaints
+      const ordersWithComplaints = orders.filter(order => 
+        order.complaints && order.complaints.length > 0
+      );
+      setOrdersWithComplaints(ordersWithComplaints);
+      // Count total complaints
+      const totalComplaints = ordersWithComplaints.reduce((sum, order) => 
+        sum + (order.complaints?.length || 0), 0
+      );
+      setComplaintsCount(totalComplaints);
+    } catch (err) {
+      console.error('Error fetching complaints:', err);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
       <PharmacyOwnerNav showName />
@@ -117,6 +144,51 @@ const PharmacyDashboard = () => {
                       <div className="text-2xl font-bold text-blue-600 mt-2">
                         Orders
                       </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </article>
+
+          {/* Complaints Card */}
+          <article className="bg-white rounded-xl p-5 shadow-md border border-gray-100 transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg">
+            <Link
+              to="/pharmacy/complaints"
+              className="block h-full"
+              aria-label="View Complaints"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 inline-flex items-center justify-center rounded-full bg-linear-to-br from-red-50 to-pink-50 text-red-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M12 9v2m0 4h.01M4.93 4.93l14.14 14.14M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div>
+                    <div className="text-2xl font-bold text-blue-600 mt-2">
+                      Complaints
+                    </div>
+                    {complaintsCount > 0 && (
+                      <div className="mt-2">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          {complaintsCount} New
+                        </span>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {ordersWithComplaints.length} order{ordersWithComplaints.length !== 1 ? 's' : ''} with complaints
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

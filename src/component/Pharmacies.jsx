@@ -37,7 +37,12 @@ export default function Pharmacies() {
 
   useEffect(() => {
     fetchPharmacies(offset);
-    fetchFavorites();
+    // Only attempt to fetch favorites when user is logged in
+    if (localStorage.getItem('auth_token')) {
+      fetchFavorites();
+    } else {
+      setFavoriteIds([]);
+    }
   }, [offset]);
 
   const fetchFavorites = async () => {
@@ -52,6 +57,12 @@ export default function Pharmacies() {
   };
 
   const handleFavoriteToggle = async (pharmacyId) => {
+    // If user not logged in, redirect to login
+    if (!localStorage.getItem('auth_token')) {
+      navigate('/login');
+      return;
+    }
+
     const isFav = favoriteIds.includes(pharmacyId);
     try {
       if (isFav) {
