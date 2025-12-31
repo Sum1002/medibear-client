@@ -4,13 +4,13 @@ import toast, {Toaster} from 'react-hot-toast';
 
 
 export default function LoginForm() {
-  const [phone, setPhone] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
   const onSubmit = async () => {
     // Handle form submission logic here
     const payload = {
-      phone,
+      identifier,
       password,
     }
     try {
@@ -45,16 +45,16 @@ export default function LoginForm() {
         </div>
         <form>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2" for="phone">
-              Phone Number
+            <label className="block text-gray-700 mb-2" htmlFor="identifier">
+              Email or Phone Number
             </label>
             <input
-              type="tel"
-              id="phone"
+              type="text"
+              id="identifier"
               className="w-full px-4 py-2 rounded border border-gray-300 focus:border-blue-500 outline-none"
-              placeholder="Your Phone Number"
+              placeholder="Your Email or Phone Number"
               onChange={(e) => {
-                setPhone(e.target.value)
+                setIdentifier(e.target.value)
               }}
             />
           </div>
