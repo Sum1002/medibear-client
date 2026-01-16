@@ -95,6 +95,15 @@ export default function Cart() {
   };
 
   function placeOrder() {
+    // Require login before placing order
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      toast.error('Please login to place your order');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 600);
+      return;
+    }
     if (cart.length === 0) {
       toast.error('Your cart is empty');
       return;

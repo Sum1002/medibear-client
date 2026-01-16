@@ -73,7 +73,6 @@ export default function Navbar() {
           )}
         </ul>
         <div className="flex items-center gap-4">
-          {getLoggedInUser() && (
             <a
               href="/checkout"
               className="relative text-gray-700 hover:text-blue-700"
@@ -97,7 +96,7 @@ export default function Navbar() {
                 {cartCount}
               </span>
             </a>
-          )}
+          
           {getLoggedInUser() ? (
             <>
               <a href="/profile" className="text-blue-700 hover:text-blue-900 font-medium hover:underline">
