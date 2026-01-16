@@ -9,6 +9,16 @@ export default function PaymentSuccess() {
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
+    // Clear client-side cart after successful payment
+    try {
+      localStorage.removeItem('cart');
+      window.dispatchEvent(new Event('cart-updated'));
+    } catch (e) {
+      // non-fatal
+      // eslint-disable-next-line no-console
+      console.error('Failed to clear cart on payment success', e);
+    }
+
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
