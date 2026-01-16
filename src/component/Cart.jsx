@@ -104,6 +104,11 @@ export default function Cart() {
       return;
     }
 
+    if (!defaultAddress) {
+      toast.error('Please add a delivery address in your profile');
+      return;
+    }
+
     // Check if all items have the same pharmacy_id
     const pharmacyIds = cart.map((item) => item.pharmacyId).filter(Boolean);
     if (new Set(pharmacyIds).size > 1) {
@@ -136,10 +141,22 @@ export default function Cart() {
         console.log('Sending order with prescription');
         const response = await createOrder(formData);
         console.log('Order response:', response);
-        toast.success('Order placed successfully!');
-        setCart([]);
-        localStorage.removeItem('cart');
-        window.dispatchEvent(new Event('cart-updated'));
+        
+        // If payment is online (SSLCommerz), redirect to payment gateway
+        if (payment === 'online' && response.data?.payment_url) {
+          toast.success('Redirecting to payment gateway...');
+          window.location.href = response.data.payment_url;
+        } else {
+          // COD order - success
+          toast.success('Order placed successfully!');
+          setCart([]);
+          localStorage.removeItem('cart');
+          window.dispatchEvent(new Event('cart-updated'));
+          // Redirect to success page
+          setTimeout(() => {
+            window.location.href = '/payment-success';
+          }, 1500);
+        }
       } catch (error) {
         console.error('Error placing order:', error);
         console.error('Error response:', error.response?.data);
@@ -287,18 +304,40 @@ export default function Cart() {
 
           <div className="mb-4">
             <label className="block text-sm muted mb-2">Payment method</label>
-            <div className="flex flex-col gap-2">
-              <label className="inline-flex items-center">
-                <input type="radio" name="payment" value="cod" checked={payment === 'cod'} onChange={() => setPayment('cod')} className="mr-2" />
-                Cash on delivery
+            <div className="flex flex-col gap-3">
+              <label className="inline-flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <input 
+                  type="radio" 
+                  name="payment" 
+                  value="cod" 
+                  checked={payment === 'cod'} 
+                  onChange={() => setPayment('cod')} 
+                  className="mr-3" 
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">💵</span>
+                  <span className="font-medium">Cash on Delivery</span>
+                </div>
               </label>
-              <label className="inline-flex items-center">
-                <input type="radio" name="payment" value="bkash" checked={payment === 'bkash'} onChange={() => setPayment('bkash')} className="mr-2" />
-                bKash
-              </label>
-              <label className="inline-flex items-center">
-                <input type="radio" name="payment" value="card" checked={payment === 'card'} onChange={() => setPayment('card')} className="mr-2" />
-                Card (online)
+              
+              <label className="inline-flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <input 
+                  type="radio" 
+                  name="payment" 
+                  value="online" 
+                  checked={payment === 'online'} 
+                  onChange={() => setPayment('online')} 
+                  className="mr-3" 
+                />
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium text-sm">Pay with SSLCommerz</span>
+                  <img 
+                    src="https://securepay.sslcommerz.com/public/image/SSLCommerz-Pay-With-logo-All-Size-01.png" 
+                    alt="SSLCommerz" 
+                    className="h-6 w-auto"
+                  />
+                  <span className="text-xs text-gray-500">Card, Mobile Banking, Internet Banking</span>
+                </div>
               </label>
             </div>
           </div>

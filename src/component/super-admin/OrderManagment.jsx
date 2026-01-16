@@ -84,7 +84,7 @@ const OrderManagment = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-white font-sans">
+    <div className="min-h-screen bg-linear-to-r from-blue-50 to-white font-sans">
       <Toaster position="top-right" />
       <div className="max-w-7xl mx-auto p-8">
         <div className="flex items-center justify-between mb-6">
