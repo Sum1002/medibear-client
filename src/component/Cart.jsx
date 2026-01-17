@@ -35,7 +35,9 @@ export default function Cart() {
   }, []);
 
   useEffect(() => {
-    fetchDefaultAddress();
+    // Only fetch default address when user is authenticated.
+    const token = localStorage.getItem('auth_token');
+    if (token) fetchDefaultAddress();
   }, []);
 
   const fetchDefaultAddress = async () => {
