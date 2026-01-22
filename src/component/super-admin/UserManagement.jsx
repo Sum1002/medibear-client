@@ -106,7 +106,7 @@ const UserManagement = () => {
                     <td colSpan={7} className="px-4 py-6 text-center text-gray-500">No users found.</td>
                   </tr>
                 ) : (
-                  users.map((u) => (
+                  users.filter((u) => u.register_as != 'admin').map((u) => (
                     <tr key={u.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm text-gray-700">{u.id}</td>
                       <td className="px-4 py-3">

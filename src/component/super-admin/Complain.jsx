@@ -100,25 +100,22 @@ const Complain = () => {
               {complaints.map((complaint) => (
                 <div
                   key={complaint.id}
-                  className="p-5 rounded-xl border-2 border-red-300 hover:border-red-400 shadow-md transition duration-300 bg-red-50"
+                  className="p-5 rounded-xl border-2 border-red-100 hover:border-red-200 shadow-md transition duration-300 bg-red-50"
                 >
                   <h3 className="text-2xl font-semibold text-red-700">
                     Complaint #{complaint.id}
                   </h3>
-                  <p className="text-red-600">
+                  <p className="text-black-500">
                     User: {complaint.user?.email || "N/A"}
                   </p>
-                  <p className="text-red-600">
+                  <p className="text-black-500">
                     User Type:{" "}
                     {complaint.user?.register_as === "pharmacy"
                       ? "Pharmacy"
                       : "Customer"}
                   </p>
-                  <p className="text-red-600">
-                    Order ID: #{complaint.order_id}
-                  </p>
                   {complaint.created_at && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-sm text-black-500">
                       Submitted: {formatDate(complaint.created_at)}
                     </p>
                   )}

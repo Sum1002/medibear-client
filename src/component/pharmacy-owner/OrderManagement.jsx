@@ -738,7 +738,7 @@ const OrderManagement = () => {
             {/* Complaints */}
             <div className="lg:col-span-2 bg-white rounded-lg border p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-gray-600">Complaints</h3>
+                <h3 className="text-sm font-semibold text-gray-600">Notes</h3>
                 <span className="text-xs text-gray-500">
                   {Array.isArray(selectedOrder.complaints) ? selectedOrder.complaints.length : 0} item(s)
                 </span>
@@ -761,7 +761,7 @@ const OrderManagement = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500">No complaints for this order.</p>
+                <p className="text-sm text-gray-500">No notes for this order.</p>
               )}
             </div>
           </div>

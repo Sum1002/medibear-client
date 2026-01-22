@@ -320,26 +320,6 @@ const AdminDashboard = () => {
             </svg>
             <span>Users</span>
           </button>
-          <button
-            onClick={() => navigate("/admin/reports")}
-            className="flex flex-col items-center space-y-1 hover:text-blue-700 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                d="M9.75 17L6 14.25m0 0L12 8.25m-6 6l3.75-2.75M12 10v4m0 0v4m0-4h3.75a2.25 2.25 0 002.25-2.25v-2.25a4.5 4.5 0 00-9 0v2.25A2.25 2.25 0 0012 14z"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-              />
-            </svg>
-            <span>Reports</span>
-          </button>
         </footer>
       </div>
     </div>

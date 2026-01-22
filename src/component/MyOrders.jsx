@@ -465,22 +465,22 @@ export default function MyOrders() {
             {/* Complaints */}
             <div className="border-t pt-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-gray-600">Complaints</h3>
+                <h3 className="text-sm font-semibold text-gray-600">Notes & Complaints</h3>
                 <button
                   onClick={() => setShowComplaintForm((v) => !v)}
                   className="px-3 py-1.5 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
                 >
-                  {showComplaintForm ? "Close" : "Complain"}
+                  {showComplaintForm ? "Close" : "Add"}
                 </button>
               </div>
 
               {showComplaintForm && (
                 <div className="bg-gray-50 rounded p-4 space-y-3">
-                  <label className="text-sm font-medium text-gray-700">Your complaint</label>
+                  <label className="text-sm font-medium text-gray-700">Message</label>
                   <textarea
                     className="w-full rounded border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                     rows={3}
-                    placeholder="Type your complaint..."
+                    placeholder="Type text..."
                     value={complaintText}
                     onChange={(e) => setComplaintText(e.target.value)}
                   />
@@ -508,7 +508,7 @@ export default function MyOrders() {
                 ) : complaintsError ? (
                   <p className="text-sm text-red-600">{complaintsError}</p>
                 ) : complaints.length === 0 ? (
-                  <p className="text-sm text-gray-500">No complaints yet.</p>
+                  <p className="text-sm text-gray-500">No messages yet.</p>
                 ) : (
                   <div className="space-y-3">
                     {complaints.map((c, idx) => (
