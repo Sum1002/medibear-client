@@ -13,10 +13,6 @@ const Verification = () => {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(null);
 
-  useEffect(() => {
-    fetchPendingPharmacies();
-  }, []);
-
   const fetchPendingPharmacies = async () => {
     setLoading(true);
     try {
@@ -92,6 +88,9 @@ const Verification = () => {
           <p className="mb-8 text-gray-700 text-lg tracking-wide">
             Review new pharmacy applications here. Approve reliable ones to help
             the community stay safe.
+          </p>
+          <p className="mb-8 text-gray-700 text-lg tracking-wide">
+            This feature isn't implemented yet. Coming soon!
           </p>
 
           {loading ? (

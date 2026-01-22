@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import PharmacyOwnerNav from './PharmacyOwnerNav';
-import { getOrdersByPharmacy, updateOrderStatus } from '../../service/http';
+import { getOrdersByPharmacy, updateOrderStatus, createFulfflldDelivery, updateOrderDeliveryInfo } from '../../service/http';
 import toast, { Toaster } from 'react-hot-toast';
 
 const OrderManagement = () => {
@@ -14,6 +14,8 @@ const OrderManagement = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const [selectedDeliveryProvider, setSelectedDeliveryProvider] = useState(null);
+  const [dispatchingDelivery, setDispatchingDelivery] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -70,8 +72,127 @@ const OrderManagement = () => {
 
   const closeDrawer = () => {
     setDrawerOpen(false);
-    setTimeout(() => setSelectedOrder(null), 300);
+    setTimeout(() => {
+      setSelectedOrder(null);
+      setSelectedDeliveryProvider(null);
+    }, 300);
     setStatusDropdownOpen(false);
+  };
+
+  const handleDispatchDelivery = async () => {
+    if (!selectedOrder || !selectedDeliveryProvider) {
+      toast.error('Please select a delivery provider');
+      return;
+    }
+
+    if (selectedDeliveryProvider !== 'fulflld') {
+      toast.error('This delivery provider is currently inactive');
+      return;
+    }
+
+    setDispatchingDelivery(true);
+    try {
+      // Get current logged-in pharmacy information
+      const pharmacyInfo = JSON.parse(localStorage.getItem("logged_in_user") || '{}');
+      
+      // Prepare delivery data for FULFLLD API
+      console.log('Dispatching to FULFLLD:', selectedOrder);
+      const itemCount = selectedOrder.items?.length || 0;
+      const totalPrice = parseFloat(selectedOrder.total_price) || 0;
+      const itemDescription = selectedOrder.items?.map(item => 
+        `${item.quantity}x ${item.product?.name || 'Product'}`
+      ).join(', ') || 'Pharmacy order items';
+      
+      const customerAddress = selectedOrder.address ? 
+        `${selectedOrder.address.address_line_1}, ${selectedOrder.address.city}, ${selectedOrder.address.state} ${selectedOrder.address.zip_code}` 
+        : 'No address provided';
+
+      const deliveryData = {
+        orderId: `ORDER-${selectedOrder.id}-${Date.now()}`,
+        externalId: `MDB-${selectedOrder.id}`,
+        order: {
+          description: itemDescription,
+          total: totalPrice,
+          tip: 0,
+          itemCount: itemCount,
+          serviceTime: 30 // Estimated delivery time in minutes
+        },
+        pickupDetails: {
+          address: pharmacyInfo.address || 'Pharmacy Address',
+          instructions: 'Please collect the pharmacy order',
+          phone: "+88" + (pharmacyInfo.phone || '1234567890'),
+          location: {
+            latitude: pharmacyInfo.latitude || 23.8103,
+            longitude: pharmacyInfo.longitude || 90.4125
+          },
+          scheduledPickupAt: new Date(Date.now() + 5 * 60000).toISOString(), // 5 minutes from now
+          name: pharmacyInfo.name || 'Pharmacy',
+          businessName: pharmacyInfo.pharmacy_name || pharmacyInfo.name || 'MediBear Pharmacy'
+        },
+        dropoffDetails: {
+          address: customerAddress,
+          phone: "+88" + (selectedOrder.user?.phone) || '+8800000000000',
+          location: {
+            latitude: selectedOrder.address?.latitude || 23.8103,
+            longitude: selectedOrder.address?.longitude || 90.4125
+          },
+          scheduledDropoffAt: new Date(Date.now() + 35 * 60000).toISOString(), // 35 minutes from now
+          name: selectedOrder.user?.name || 'Customer',
+          businessName: selectedOrder.user?.name || 'Customer',
+          instructions: 'Call upon arrival'
+        },
+        deliveryRequirements: {
+          signature: false,
+          photo: true,
+          notes: true
+        }
+      };
+
+      console.log('FULFLLD Delivery Data:', deliveryData);
+
+      const response = await createFulfflldDelivery(deliveryData);
+      
+      // Store delivery information in backend
+      const deliveryInfo = {
+        delivery_provider: 'FULFLLD',
+        delivery_display_id: response.data.displayId,
+        delivery_tracking_url: response.data.trackingUrl,
+      };
+      
+      await updateOrderDeliveryInfo(selectedOrder.id, deliveryInfo);
+      
+      // Update local state
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === selectedOrder.id
+            ? {
+                ...o,
+                status: 'in progress',
+                delivery_provider: deliveryInfo.delivery_provider,
+                delivery_display_id: deliveryInfo.delivery_display_id,
+                delivery_tracking_url: deliveryInfo.delivery_tracking_url,
+              }
+            : o
+        )
+      );
+      
+      setSelectedOrder((prev) => ({
+        ...prev,
+        status: 'in progress',
+        delivery_provider: deliveryInfo.delivery_provider,
+        delivery_display_id: deliveryInfo.delivery_display_id,
+        delivery_tracking_url: deliveryInfo.delivery_tracking_url,
+      }));
+      
+      toast.success('Order dispatched to FULFLLD successfully!');
+      console.log('FULFLLD Response:', response.data);
+    } catch (err) {
+      console.error('Error dispatching delivery:', err);
+      const message = err.response?.data?.message || 'Failed to dispatch delivery';
+      toast.error(message);
+    } finally {
+      setDispatchingDelivery(false);
+    }
   };
 
   const getStatusColor = (status) => {
@@ -266,7 +387,7 @@ const OrderManagement = () => {
                   </button>
                   {statusDropdownOpen && (
                     <div className="absolute left-0 right-0 border border-gray-300 border-t-0 rounded-b bg-white shadow-lg max-h-48 overflow-y-auto z-50">
-                      {['pending', 'accepted', 'in progress', 'completed'].map((s) => (
+                      {['pending', 'accepted', 'in progress', 'completed', 'cancelled'].map((s) => (
                         <button
                           key={s}
                           type="button"
@@ -490,6 +611,128 @@ const OrderManagement = () => {
                   ৳ {(parseFloat(selectedOrder.total_price) || 0).toFixed(2)}
                 </span>
               </div>
+            </div>
+
+            {/* Delivery Service Provider */}
+            <div className="lg:col-span-2 bg-white rounded-lg border p-4">
+              <h3 className="text-sm font-semibold text-gray-600 mb-3">
+                Dispatch to Delivery Service
+              </h3>
+              
+              {selectedOrder.delivery_provider ? (
+                // Show delivery tracking info if already dispatched
+                <div className="space-y-3">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="font-semibold text-green-900">Delivery Dispatched</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Provider:</span>
+                        <span className="font-medium text-gray-900">{selectedOrder.delivery_provider}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Delivery ID:</span>
+                        <span className="font-medium text-gray-900">{selectedOrder.delivery_display_id}</span>
+                      </div>
+                    </div>
+                    {selectedOrder.delivery_tracking_url && (
+                      <a
+                        href={selectedOrder.delivery_tracking_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Track Delivery
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                // Show provider selection if not yet dispatched
+                <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  {/* FULFLLD - Active */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDeliveryProvider('fulflld')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      selectedDeliveryProvider === 'fulflld'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-gray-900">FULFLLD</span>
+                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
+                        Active
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 text-left">Professional delivery service</p>
+                  </button>
+
+                  {/* Pathao - Inactive */}
+                  <button
+                    type="button"
+                    disabled
+                    className="p-4 rounded-lg border-2 border-gray-200 opacity-50 cursor-not-allowed"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-gray-900">Pathao</span>
+                      <span className="text-xs px-2 py-1 bg-gray-100 text-gray-500 rounded-full font-medium">
+                        Inactive
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 text-left">Coming soon</p>
+                  </button>
+
+                  {/* Uber - Inactive */}
+                  <button
+                    type="button"
+                    disabled
+                    className="p-4 rounded-lg border-2 border-gray-200 opacity-50 cursor-not-allowed"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-gray-900">Uber</span>
+                      <span className="text-xs px-2 py-1 bg-gray-100 text-gray-500 rounded-full font-medium">
+                        Inactive
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 text-left">Coming soon</p>
+                  </button>
+
+                  {/* Lalamove - Inactive */}
+                  <button
+                    type="button"
+                    disabled
+                    className="p-4 rounded-lg border-2 border-gray-200 opacity-50 cursor-not-allowed"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-gray-900">Lalamove</span>
+                      <span className="text-xs px-2 py-1 bg-gray-100 text-gray-500 rounded-full font-medium">
+                        Inactive
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 text-left">Coming soon</p>
+                  </button>
+                </div>
+
+                {/* Dispatch Button */}
+                <button
+                  onClick={handleDispatchDelivery}
+                  disabled={!selectedDeliveryProvider || dispatchingDelivery}
+                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {dispatchingDelivery ? 'Dispatching...' : 'Dispatch to Selected Provider'}
+                </button>
+              </div>
+              )}
             </div>
 
             {/* Complaints */}

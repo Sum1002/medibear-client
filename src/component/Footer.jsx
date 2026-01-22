@@ -29,8 +29,8 @@ export default function Footer() {
 
       <div className="md:text-right">
         <h4 className="text-white font-semibold mb-3">Contact</h4>
-        <p className="text-gray-300 text-sm">support@medibear.com</p>
-        <p className="text-gray-300 text-sm">+880 1234 567890</p>
+        <p className="text-gray-300 text-sm">sumaiya14035@gmail.com</p>
+        <p className="text-gray-300 text-sm">+880 1827076158</p>
         <div className="flex gap-3 mt-4 justify-start md:justify-end">
           {/* Simple social icons */}
           <a href="#" className="text-gray-300 hover:text-white" aria-label="Facebook">

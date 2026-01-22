@@ -41,6 +41,20 @@ const getAuthHeaders = (isFormData = false) => {
   };
 };
 
+// FULFLLD Delivery Service Integration
+export const createFulfflldDelivery = (orderData) => {
+  const FULFLLD_API_URL = "https://api.fulflld.com/v1/orders";
+  const FULFLLD_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Njk1NDQ1NzMsImlhdCI6MTc2OTExMjU3MywiaXNzIjoid2ViLWFwaSIsInN1YiI6IjY5NzI4MzM3ZTJmODI1MWVlYzQwYzI3NkBmdWxmbGxkLmNvbSJ9.OpnTeKqK8d5kVDBs1_Fi9Bs7oxwGzORVmyoKETSUeOk";
+  
+  return axios.post(FULFLLD_API_URL, orderData, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${FULFLLD_TOKEN}`,
+      "accept": "application/json"
+    }
+  });
+};
+
 export const fetchProducts = () => {
   return axios.get(`${baseUrl}/products`, {
     headers: getAuthHeaders(),
@@ -150,6 +164,16 @@ export const updateOrderStatus = (orderId, status) => {
   return axios.post(
     `${baseUrl}/orders/${orderId}/status`,
     { status },
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+};
+
+export const updateOrderDeliveryInfo = (orderId, deliveryInfo) => {
+  return axios.post(
+    `${baseUrl}/orders/${orderId}/delivery-info`,
+    deliveryInfo,
     {
       headers: getAuthHeaders(),
     },
