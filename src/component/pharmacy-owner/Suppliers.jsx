@@ -136,48 +136,46 @@ const Suppliers = () => {
 
         <section>
           <div className="overflow-x-auto bg-white rounded-lg shadow">
-            <table className="min-w-full" style={{ minWidth: "900px" }}>
-              <thead className="border-b">
+            <table className="min-w-full">
+              <thead className="border-b bg-gray-100">
                 <tr>
-                  <th className="text-left px-4 py-3">Name</th>
-                  <th className="text-left px-4 py-3">Address</th>
-                  <th className="text-left px-4 py-3">Actions</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Name</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Address</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {filtered.map((supplier, idx) => (
-                  <tr key={supplier.id || idx}>
-                    <td className="px-4 py-3">{supplier.name}</td>
-                    <td className="px-4 py-3">{supplier.address}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => openModal(idx)}
-                          className="px-3 py-1 text-sm bg-yellow-50 text-yellow-800 rounded hover:bg-yellow-100"
-                          disabled={loading}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(idx)}
-                          className="px-3 py-1 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100 disabled:opacity-50"
-                          disabled={loading}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {filtered.length === 0 && (
+                {filtered.length === 0 ? (
                   <tr>
-                    <td
-                      className="px-4 py-6 text-center text-gray-500"
-                      colSpan={3}
-                    >
+                    <td className="px-4 py-6 text-center text-gray-500" colSpan={3}>
                       No suppliers found.
                     </td>
                   </tr>
+                ) : (
+                  filtered.map((supplier, idx) => (
+                    <tr key={supplier.id || idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-900">{supplier.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{supplier.address}</td>
+                      <td className="px-4 py-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => openModal(suppliers.indexOf(supplier))}
+                            className="px-3 py-1 text-xs bg-yellow-50 text-yellow-800 rounded hover:bg-yellow-100 font-medium"
+                            disabled={loading}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(suppliers.indexOf(supplier))}
+                            className="px-3 py-1 text-xs bg-red-50 text-red-700 rounded hover:bg-red-100 disabled:opacity-50 font-medium"
+                            disabled={loading}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>

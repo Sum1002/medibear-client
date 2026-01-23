@@ -190,43 +190,61 @@ const Inventory = () => {
 
         <section>
           <div className="overflow-x-auto bg-white rounded-lg shadow">
-            <table className="min-w-full" style={{ minWidth: "1100px" }}>
-              <thead className="border-b">
+            <table className="min-w-full">
+              <thead className="border-b bg-gray-100">
                 <tr>
-                  <th className="text-left px-4 py-3">Medicine name</th>
-                  <th className="text-left px-4 py-3">Supplier</th>
-                  <th className="text-left px-4 py-3">Stock</th>
-                  <th className="text-left px-4 py-3">Price</th>
-                  <th className="text-left px-4 py-3">Actions</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Medicine name</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Supplier</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Stock</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Price</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {data.map((row, idx) => (
-                  <tr key={idx}>
-                    <td className="px-4 py-3">{row.name}</td>
-                    <td className="px-4 py-3">{row.supplier?.name || "N/A"}</td>
-                    <td className="px-4 py-3">{row.stock || 0}</td>
-                    <td className="px-4 py-3">৳ {row.price || 0}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => openModal(idx)}
-                          className="px-3 py-1 text-sm bg-yellow-50 text-yellow-800 rounded hover:bg-yellow-100"
-                          disabled={loading}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(idx)}
-                          className="px-3 py-1 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100 disabled:opacity-50"
-                          disabled={loading}
-                        >
-                          Delete
-                        </button>
-                      </div>
+                {data
+                  .filter((row) => {
+                    const term = searchTerm.toLowerCase();
+                    return !term || row.name?.toLowerCase().includes(term) || row.supplier?.name?.toLowerCase().includes(term);
+                  })
+                  .length === 0 ? (
+                  <tr>
+                    <td className="px-4 py-6 text-center text-gray-500" colSpan={5}>
+                      No products found.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  data
+                    .filter((row) => {
+                      const term = searchTerm.toLowerCase();
+                      return !term || row.name?.toLowerCase().includes(term) || row.supplier?.name?.toLowerCase().includes(term);
+                    })
+                    .map((row, idx) => (
+                      <tr key={row.id || idx} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-900">{row.name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{row.supplier?.name || "N/A"}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{row.stock || 0}</td>
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900">৳ {parseFloat(row.price || 0).toFixed(2)}</td>
+                        <td className="px-4 py-3 text-sm">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => openModal(data.indexOf(row))}
+                              className="px-3 py-1 text-xs bg-yellow-50 text-yellow-800 rounded hover:bg-yellow-100 font-medium"
+                              disabled={loading}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(data.indexOf(row))}
+                              className="px-3 py-1 text-xs bg-red-50 text-red-700 rounded hover:bg-red-100 disabled:opacity-50 font-medium"
+                              disabled={loading}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                )}
               </tbody>
             </table>
           </div>

@@ -714,7 +714,7 @@ const OrderManagement = () => {
                     className="p-4 rounded-lg border-2 border-gray-200 opacity-50 cursor-not-allowed"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-gray-900">Lalamove</span>
+                      <span className="font-semibold text-gray-900">Stead Fast</span>
                       <span className="text-xs px-2 py-1 bg-gray-100 text-gray-500 rounded-full font-medium">
                         Inactive
                       </span>
