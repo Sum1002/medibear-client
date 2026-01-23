@@ -163,9 +163,9 @@ export default function Cart() {
           setCart([]);
           localStorage.removeItem('cart');
           window.dispatchEvent(new Event('cart-updated'));
-          // Redirect to success page
+          // Redirect to my orders page for COD
           setTimeout(() => {
-            window.location.href = '/payment-success';
+            window.location.href = '/my-orders';
           }, 1500);
         }
       } catch (error) {
