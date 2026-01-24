@@ -16,6 +16,7 @@ export default function MyOrders() {
   const [showComplaintForm, setShowComplaintForm] = useState(false);
   const [complaintText, setComplaintText] = useState("");
   const [complaintSubmitting, setComplaintSubmitting] = useState(false);
+  const [invoiceDownloading, setInvoiceDownloading] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -87,6 +88,121 @@ export default function MyOrders() {
       toast.error(msg);
     } finally {
       setComplaintSubmitting(false);
+    }
+  };
+
+  const buildInvoiceHtml = (order) => {
+    const currency = (value) => `৳ ${parseFloat(value || 0).toFixed(2)}`;
+    const created = formatDate(order.created_at);
+    const deliveryFee = 50;
+    const subtotal = parseFloat(order.total_price || 0);
+    const grandTotal = subtotal + deliveryFee;
+
+    const address = order.address
+      ? `${order.address.address_line_1 || ""}${order.address.address_line_2 ? ", " + order.address.address_line_2 : ""}, ${order.address.city || ""}, ${order.address.state || ""} ${order.address.zip_code || ""}`
+      : "N/A";
+
+    const itemsRows = (order.items || [])
+      .map(
+        (item, idx) => `
+          <tr>
+            <td style="padding:8px;border:1px solid #e5e7eb;">${idx + 1}</td>
+            <td style="padding:8px;border:1px solid #e5e7eb;">${item.product?.name || "Item"}</td>
+            <td style="padding:8px;border:1px solid #e5e7eb;text-align:center;">${item.quantity || 0}</td>
+            <td style="padding:8px;border:1px solid #e5e7eb;text-align:right;">${currency(item.price || 0)}</td>
+          </tr>`
+      )
+      .join("");
+
+    return `<!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Invoice #${order.id}</title>
+      <style>
+        body { font-family: Arial, sans-serif; color: #111827; padding: 24px; }
+        h1 { margin: 0 0 4px 0; }
+        .muted { color: #6b7280; }
+        .section { margin-top: 16px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+        .totals td { padding: 6px 8px; }
+      </style>
+    </head>
+    <body>
+      <h1>Invoice</h1>
+      <div class="muted">Order #${order.id}</div>
+      <div class="muted">${created}</div>
+
+      <div class="section">
+        <strong>Billed To:</strong><br />
+        ${order.user?.name || "Customer"}<br />
+        ${address}
+      </div>
+
+      <div class="section">
+        <strong>Pharmacy:</strong><br />
+        ${order.pharmacy?.name || "N/A"}<br />
+        ${order.pharmacy?.phone || ""}
+      </div>
+
+      <div class="section">
+        <strong>Items</strong>
+        <table>
+          <thead>
+            <tr style="background:#f3f4f6;">
+              <th style="padding:8px;border:1px solid #e5e7eb;text-align:left;">#</th>
+              <th style="padding:8px;border:1px solid #e5e7eb;text-align:left;">Product</th>
+              <th style="padding:8px;border:1px solid #e5e7eb;text-align:center;">Qty</th>
+              <th style="padding:8px;border:1px solid #e5e7eb;text-align:right;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsRows || `<tr><td colspan="4" style="padding:8px;border:1px solid #e5e7eb;text-align:center;"">No items</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section" style="max-width:320px;margin-left:auto;">
+        <table class="totals" style="width:100%;">
+          <tr><td>Subtotal</td><td style="text-align:right;">${currency(subtotal)}</td></tr>
+          <tr><td>Delivery</td><td style="text-align:right;">${currency(deliveryFee)}</td></tr>
+          <tr><td style="font-weight:bold;">Total</td><td style="text-align:right;font-weight:bold;">${currency(grandTotal)}</td></tr>
+        </table>
+      </div>
+
+      <div class="section muted">Payment Method: ${order.payment_type?.toUpperCase() || "N/A"}</div>
+
+      <script>
+        window.onload = () => {
+          setTimeout(() => {
+            window.print();
+            window.close();
+          }, 200);
+        };
+      </script>
+    </body>
+    </html>`;
+  };
+
+  const downloadInvoice = () => {
+    if (!selectedOrder?.id || invoiceDownloading) return;
+    setInvoiceDownloading(true);
+    try {
+      const html = buildInvoiceHtml(selectedOrder);
+      const invoiceWindow = window.open("", "_blank", "width=800,height=900");
+      if (!invoiceWindow) {
+        throw new Error("Popup blocked. Please allow popups to download invoice.");
+      }
+      invoiceWindow.document.open();
+      invoiceWindow.document.write(html);
+      invoiceWindow.document.close();
+      toast.success("Invoice opened for download");
+    } catch (err) {
+      console.error("Error generating invoice:", err);
+      const msg = err.message || "Unable to generate invoice";
+      toast.error(msg);
+    } finally {
+      setInvoiceDownloading(false);
     }
   };
 
@@ -239,13 +355,25 @@ export default function MyOrders() {
 
           <div className="p-6 space-y-6">
             {/* Order Header */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-600 mb-2">
-                Order ID
-              </h3>
-              <p className="text-lg font-bold text-gray-900">
-                #{selectedOrder.id}
-              </p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                  Order ID
+                </h3>
+                <p className="text-lg font-bold text-gray-900">
+                  #{selectedOrder.id}
+                </p>
+              </div>
+              <button
+                onClick={downloadInvoice}
+                disabled={invoiceDownloading}
+                className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white ${invoiceDownloading ? "bg-blue-300" : "bg-blue-600 hover:bg-blue-700"}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 12l4 4m0 0l4-4m-4 4V4" />
+                </svg>
+                {invoiceDownloading ? "Preparing..." : "Download Invoice"}
+              </button>
             </div>
 
             {/* Order Status */}

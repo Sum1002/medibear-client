@@ -179,7 +179,7 @@ const Report = () => {
               disabled={!filteredOrders.length || downloading}
               className="bg-blue-700 text-white px-4 py-2 rounded-lg shadow disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {downloading ? "Preparing..." : "Download CSV"}
+              {downloading ? "Preparing..." : "Download "}
             </button>
             <button
               onClick={() => navigate("/admin/dashboard")}
@@ -239,8 +239,6 @@ const Report = () => {
                   key={key}
                   className="inline-flex items-center gap-2 text-xs bg-blue-50 text-blue-800 px-2 py-1 rounded-full"
                 >
-                  <span className="font-semibold">{key}</span>
-                  <span className="text-gray-600">{value.count}x</span>
                 </span>
               ))}
               {!Object.keys(metrics.paymentMix).length && (
