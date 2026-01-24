@@ -183,7 +183,7 @@ const Report = () => {
             </button>
             <button
               onClick={() => navigate("/admin/dashboard")}
-              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-white bg-linear-to-r from-blue-950 to-blue-700 hover:bg-blue-800"
             >
               Back to Dashboard
             </button>
