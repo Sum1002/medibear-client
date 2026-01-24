@@ -105,6 +105,26 @@ const AdminDashboard = () => {
             <span>Orders</span>
           </button>
           <button
+            onClick={() => navigate("/admin/reports")}
+            className="flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-100"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 17v-6a2 2 0 012-2h8m-5-4h5v5m-5 11H5a2 2 0 01-2-2V6a2 2 0 012-2h5"
+              />
+            </svg>
+            <span>Reports</span>
+          </button>
+          <button
             onClick={() => navigate("/admin/users")}
             className="flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-gray-100"
           >
@@ -299,6 +319,26 @@ const AdminDashboard = () => {
               />
             </svg>
             <span>Orders</span>
+          </button>
+          <button
+            onClick={() => navigate("/admin/reports")}
+            className="flex flex-col items-center space-y-1 hover:text-blue-700 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                d="M9 17v-6a2 2 0 012-2h8m-5-4h5v5m-5 11H5a2 2 0 01-2-2V6a2 2 0 012-2h5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+              />
+            </svg>
+            <span>Reports</span>
           </button>
           <button
             onClick={() => navigate("/admin/users")}

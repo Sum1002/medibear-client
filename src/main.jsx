@@ -30,6 +30,7 @@ import Verification from './component/super-admin/Verification.jsx';
 import UserManagement from './component/super-admin/UserManagement.jsx';
 import Complain from './component/super-admin/Complain.jsx';
 import OrderManagment from './component/super-admin/OrderManagment.jsx';
+import Report from './component/super-admin/Report.jsx';
 import Support from './component/Support.jsx';
 
 createRoot(document.getElementById('root')).render(
@@ -63,6 +64,7 @@ createRoot(document.getElementById('root')).render(
       <Route path="/admin/users" element={<UserManagement />} />
       <Route path="/admin/user-complaints" element={<Complain />} />
       <Route path="/admin/orders" element={<OrderManagment />} />
+      <Route path="/admin/reports" element={<Report />} />
       <Route path="/support" element={<Support />} />
       </Routes>
   </BrowserRouter>,
